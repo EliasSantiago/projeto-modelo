@@ -71,7 +71,7 @@ export function RegisterForm() {
         Já tem conta?{' '}
         <Link
           href={ROUTES.login}
-          className="text-brand-500 hover:text-brand-600 font-medium"
+          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
         >
           Entrar
         </Link>

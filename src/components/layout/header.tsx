@@ -30,6 +30,14 @@ export async function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="hidden sm:inline-flex"
+          >
+            <Link href={ROUTES.docs}>Docs</Link>
+          </Button>
           <ThemeToggle />
           {user ? (
             <>

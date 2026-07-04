@@ -24,7 +24,7 @@ async function ResetContent({
         </p>
         <Link
           href={ROUTES.forgotPassword}
-          className="text-brand-500 hover:text-brand-600 font-medium"
+          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
         >
           Solicitar um novo link
         </Link>

@@ -44,7 +44,7 @@ export function ForgotPasswordForm() {
         Lembrou a senha?{' '}
         <Link
           href={ROUTES.login}
-          className="text-brand-500 hover:text-brand-600 font-medium"
+          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
         >
           Voltar ao login
         </Link>

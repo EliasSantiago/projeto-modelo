@@ -45,7 +45,7 @@ export function LoginForm() {
       <div className="mb-4 flex justify-end">
         <Link
           href={ROUTES.forgotPassword}
-          className="text-brand-500 hover:text-brand-600 text-sm font-medium"
+          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 text-sm font-medium dark:hover:text-white"
         >
           Esqueceu a senha?
         </Link>
@@ -59,7 +59,7 @@ export function LoginForm() {
         Ainda não tem conta?{' '}
         <Link
           href={ROUTES.register}
-          className="text-brand-500 hover:text-brand-600 font-medium"
+          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
         >
           Criar conta
         </Link>

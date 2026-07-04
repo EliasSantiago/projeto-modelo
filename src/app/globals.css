@@ -9,40 +9,40 @@
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
-  --primary: #422afb;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f7fe;
-  --secondary-foreground: #1b254b;
-  --muted: #f4f7fe;
-  --muted-foreground: #a3aed0;
-  --accent: #f4f7fe;
-  --accent-foreground: #1b254b;
+  --primary: #27272a;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #27272a;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #27272a;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: #e9edf7;
-  --input: #e0e5f2;
-  --ring: #7551ff;
+  --border: #e4e4e7;
+  --input: #d4d4d8;
+  --ring: #27272a;
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: #0b1437;
-  --foreground: #ffffff;
-  --card: #111c44;
-  --card-foreground: #ffffff;
-  --primary: #7551ff;
-  --primary-foreground: #ffffff;
-  --secondary: #1b254b;
-  --secondary-foreground: #ffffff;
-  --muted: #1b254b;
-  --muted-foreground: #a3aed0;
-  --accent: #1b254b;
-  --accent-foreground: #ffffff;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --card-foreground: #fafafa;
+  --primary: #e4e4e7;
+  --primary-foreground: #18181b;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #27272a;
+  --accent-foreground: #fafafa;
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
   --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.12);
-  --ring: #7551ff;
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #d4d4d8;
 }
 
 @theme inline {
@@ -66,32 +66,32 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
-  /* Paleta da marca: acento roxo (brand) + navy (modo escuro). */
-  --color-brand-50: #e9e3ff;
-  --color-brand-100: #c0b8fe;
-  --color-brand-200: #a195fd;
-  --color-brand-300: #8171fc;
-  --color-brand-400: #7551ff;
-  --color-brand-500: #422afb;
-  --color-brand-600: #3311db;
-  --color-brand-700: #2111a5;
-  --color-brand-800: #190793;
-  --color-brand-900: #11047a;
+  /* Paleta grafite: acento cinza-escuro (brand) + neutros (navy). */
+  --color-brand-50: #fafafa;
+  --color-brand-100: #f4f4f5;
+  --color-brand-200: #e4e4e7;
+  --color-brand-300: #d4d4d8;
+  --color-brand-400: #52525b;
+  --color-brand-500: #27272a;
+  --color-brand-600: #1f1f22;
+  --color-brand-700: #18181b;
+  --color-brand-800: #111113;
+  --color-brand-900: #09090b;
 
-  --color-navy-50: #d0dcfb;
-  --color-navy-100: #aac0fe;
-  --color-navy-200: #a3b9f8;
-  --color-navy-300: #728fea;
-  --color-navy-400: #3652ba;
-  --color-navy-500: #1b3bbb;
-  --color-navy-600: #24388a;
-  --color-navy-700: #1b254b;
-  --color-navy-800: #111c44;
-  --color-navy-900: #0b1437;
+  --color-navy-50: #fafafa;
+  --color-navy-100: #d4d4d8;
+  --color-navy-200: #a1a1aa;
+  --color-navy-300: #71717a;
+  --color-navy-400: #71717a;
+  --color-navy-500: #52525b;
+  --color-navy-600: #3f3f46;
+  --color-navy-700: #27272a;
+  --color-navy-800: #18181b;
+  --color-navy-900: #09090b;
 
-  --color-light-primary: #f4f7fe;
+  --color-light-primary: #f4f4f5;
 }
 
 @layer base {

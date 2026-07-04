@@ -51,7 +51,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <p className="text-navy-200 mt-6 text-center text-sm">
         <Link
           href={ROUTES.login}
-          className="text-brand-500 hover:text-brand-600 font-medium"
+          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
         >
           Voltar ao login
         </Link>
