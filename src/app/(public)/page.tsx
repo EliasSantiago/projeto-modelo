@@ -48,10 +48,10 @@ export default function HomePage() {
         </p>
         <div className="flex gap-3">
           <Button asChild size="lg">
-            <Link href={ROUTES.login}>Começar</Link>
+            <Link href={ROUTES.register}>Criar conta</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <Link href={ROUTES.dashboard}>Ver dashboard</Link>
+            <Link href={ROUTES.login}>Entrar</Link>
           </Button>
         </div>
       </section>

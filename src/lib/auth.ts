@@ -1,19 +1,36 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import Credentials from 'next-auth/providers/credentials'
 import GitHub from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
-import Nodemailer from 'next-auth/providers/nodemailer'
 import { db } from '@/db/client'
 import { accounts, sessions, users, verificationTokens } from '@/db/schema'
+import { authService } from '@/services/auth.service'
+import { loginSchema } from '@/schemas/auth.schema'
 import { serverEnv } from '@/lib/env.server'
 import { ROUTES } from '@/constants/routes'
 
 /**
- * Configuração central do Auth.js v5.
- * Provedores são adicionados condicionalmente conforme as credenciais
- * presentes no ambiente — o starter sobe mesmo sem OAuth configurado.
+ * Auth.js v5. Login por e-mail/senha (Credentials) + OAuth (Google/GitHub).
+ * O provider Credentials exige estratégia de sessão JWT — os provedores OAuth
+ * continuam usando o Drizzle adapter para criar/vincular contas.
  */
-const providers: NextAuthConfig['providers'] = []
+const providers: NextAuthConfig['providers'] = [
+  Credentials({
+    credentials: {
+      email: { label: 'E-mail', type: 'email' },
+      password: { label: 'Senha', type: 'password' },
+    },
+    async authorize(credentials) {
+      const parsed = loginSchema.safeParse(credentials)
+      if (!parsed.success) return null
+      return authService.verifyCredentials(
+        parsed.data.email,
+        parsed.data.password,
+      )
+    },
+  }),
+]
 
 if (serverEnv.AUTH_GOOGLE_ID && serverEnv.AUTH_GOOGLE_SECRET) {
   providers.push(
@@ -33,15 +50,6 @@ if (serverEnv.AUTH_GITHUB_ID && serverEnv.AUTH_GITHUB_SECRET) {
   )
 }
 
-if (serverEnv.AUTH_EMAIL_SERVER && serverEnv.AUTH_EMAIL_FROM) {
-  providers.push(
-    Nodemailer({
-      server: serverEnv.AUTH_EMAIL_SERVER,
-      from: serverEnv.AUTH_EMAIL_FROM,
-    }),
-  )
-}
-
 export const authConfig = {
   adapter: DrizzleAdapter(db, {
     usersTable: users,
@@ -50,7 +58,7 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   providers,
-  session: { strategy: 'database' },
+  session: { strategy: 'jwt' },
   pages: {
     signIn: ROUTES.login,
   },
@@ -70,10 +78,14 @@ export const authConfig = {
     },
   },
   callbacks: {
-    // Expõe o id do usuário na sessão para autorização (SEC-04).
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id
+    // Persiste o id do usuário no token e o expõe na sessão (SEC-04).
+    jwt({ token, user }) {
+      if (user?.id) token.id = user.id
+      return token
+    },
+    session({ session, token }) {
+      if (session.user && typeof token.id === 'string') {
+        session.user.id = token.id
       }
       return session
     },
@@ -82,9 +94,8 @@ export const authConfig = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
 
-/** Ids dos provedores efetivamente configurados (para renderizar o login). */
+/** Provedores OAuth efetivamente configurados (para renderizar os botões). */
 export const enabledProviders = {
   google: Boolean(serverEnv.AUTH_GOOGLE_ID && serverEnv.AUTH_GOOGLE_SECRET),
   github: Boolean(serverEnv.AUTH_GITHUB_ID && serverEnv.AUTH_GITHUB_SECRET),
-  email: Boolean(serverEnv.AUTH_EMAIL_SERVER && serverEnv.AUTH_EMAIL_FROM),
 } as const

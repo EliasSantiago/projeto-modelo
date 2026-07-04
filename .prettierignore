@@ -2,7 +2,6 @@
 node_modules
 pnpm-lock.yaml
 drizzle
-.archive-horizon
 playwright-report
 test-results
 coverage

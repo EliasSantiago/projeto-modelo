@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card'
 import { TaskForm } from '@/features/tasks/task-form'
 import { TaskList } from '@/features/tasks/task-list'
+import { TaskStats, TaskStatsSkeleton } from '@/features/tasks/task-stats'
 import { getCurrentUser } from '@/lib/session'
 
 export const metadata: Metadata = { title: 'Dashboard' }
@@ -19,7 +20,7 @@ function TaskListSkeleton() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="h-10 animate-pulse rounded-md bg-[var(--color-muted)]"
+          className="h-11 animate-pulse rounded-xl bg-[var(--color-muted)]"
         />
       ))}
     </div>
@@ -30,18 +31,31 @@ export default async function DashboardPage() {
   const user = await getCurrentUser()
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-10">
+      <div className="mb-6">
+        <h1 className="text-navy-700 text-2xl font-bold dark:text-white">
+          Olá, {user?.name ?? 'usuário'} 👋
+        </h1>
+        <p className="text-navy-200">Aqui está um resumo das suas tarefas.</p>
+      </div>
+
+      {/* Métricas — streamed via Suspense */}
+      <div className="mb-6">
+        <Suspense fallback={<TaskStatsSkeleton />}>
+          <TaskStats />
+        </Suspense>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Olá, {user?.name ?? 'usuário'} 👋</CardTitle>
+          <CardTitle>Minhas tarefas</CardTitle>
           <CardDescription>
-            Suas tarefas — criadas, atualizadas e removidas via Server Actions
-            com validação e autorização.
+            Criadas, atualizadas e removidas via Server Actions com validação e
+            autorização.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <TaskForm />
-          {/* Streaming: o shell aparece na hora; a lista chega em seguida. */}
           <Suspense fallback={<TaskListSkeleton />}>
             <TaskList />
           </Suspense>

@@ -40,7 +40,7 @@ Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
 | **Formulários** | [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) (validação única no cliente e no servidor)                                                     |
 | **ORM**         | [Drizzle ORM](https://orm.drizzle.team)                                                                                                                                |
 | **Banco**       | [Neon Postgres](https://neon.tech) (serverless)                                                                                                                        |
-| **Auth**        | [Auth.js v5](https://authjs.dev) — Google, GitHub e e-mail (magic link)                                                                                                |
+| **Auth**        | [Auth.js v5](https://authjs.dev) — e-mail/senha (criar conta, login, recuperação) + OAuth Google/GitHub                                                                |
 | **Estado**      | [Zustand](https://zustand-demo.pmnd.rs) (quando necessário)                                                                                                            |
 | **Testes**      | [Vitest](https://vitest.dev) + [Testing Library](https://testing-library.com) · [Playwright](https://playwright.dev)                                                   |
 | **Qualidade**   | [ESLint](https://eslint.org) · [Prettier](https://prettier.io) · [Husky](https://typicode.github.io/husky) · [lint-staged](https://github.com/lint-staged/lint-staged) |
@@ -80,7 +80,7 @@ Detalhes e justificativas: [`specs/001-projeto-modelo/plan.md`](./specs/001-proj
 - **pnpm 10+** — instale com `npm install -g pnpm`
 - Uma conta e um banco no **[Neon](https://neon.tech)** (gratuito para começar)
 - (Opcional) Credenciais OAuth do **Google** e/ou **GitHub**
-- (Opcional) Um servidor **SMTP** para login por e-mail (magic link)
+- (Opcional) Um servidor **SMTP** para e-mail de recuperação de senha
 
 ## 🚀 Como rodar o projeto
 
@@ -109,6 +109,19 @@ Acesse **http://localhost:3000**. 🎉
 > 💡 Não tem OAuth/SMTP ainda? O projeto sobe mesmo assim: a tela de login
 > mostra apenas os provedores que estiverem configurados no `.env.local`.
 
+### Páginas de autenticação
+
+O starter já inclui o fluxo completo com design split-screen:
+
+- `/register` — criação de conta (nome, e-mail, senha)
+- `/login` — login por e-mail/senha + OAuth
+- `/forgot-password` — solicitar link de recuperação
+- `/reset-password?token=...` — definir nova senha
+- `/dashboard` — área privada com métricas e a feature `tasks`
+
+Após rodar `pnpm db:seed`, use as credenciais de demonstração:
+**`demo@example.com`** / **`password123`**.
+
 ## 🔧 Como configurar o `.env`
 
 Copie o arquivo de exemplo e preencha os valores em **`.env.local`**
@@ -120,16 +133,16 @@ cp .env.example .env.local
 
 ### Variáveis
 
-| Variável                      | Escopo      | Obrigatória | Descrição                                             |
-| ----------------------------- | ----------- | :---------: | ----------------------------------------------------- |
-| `DATABASE_URL`                | servidor    |     ✅      | Connection string do Neon (use a **pooled**)          |
-| `AUTH_SECRET`                 | servidor    |     ✅      | Segredo do Auth.js                                    |
-| `AUTH_URL`                    | servidor    |   em prod   | URL canônica da aplicação                             |
-| `AUTH_GOOGLE_ID` / `_SECRET`  | servidor    |  opcional   | Credenciais OAuth do Google                           |
-| `AUTH_GITHUB_ID` / `_SECRET`  | servidor    |  opcional   | Credenciais OAuth do GitHub                           |
-| `AUTH_EMAIL_SERVER` / `_FROM` | servidor    |  opcional   | SMTP + remetente para o login por e-mail (magic link) |
-| `NEXT_PUBLIC_APP_NAME`        | **cliente** |     ✅      | Nome público da aplicação                             |
-| `NEXT_PUBLIC_APP_URL`         | **cliente** |     ✅      | URL pública da aplicação                              |
+| Variável                      | Escopo      | Obrigatória | Descrição                                              |
+| ----------------------------- | ----------- | :---------: | ------------------------------------------------------ |
+| `DATABASE_URL`                | servidor    |     ✅      | Connection string do Neon (use a **pooled**)           |
+| `AUTH_SECRET`                 | servidor    |     ✅      | Segredo do Auth.js                                     |
+| `AUTH_URL`                    | servidor    |   em prod   | URL canônica da aplicação                              |
+| `AUTH_GOOGLE_ID` / `_SECRET`  | servidor    |  opcional   | Credenciais OAuth do Google                            |
+| `AUTH_GITHUB_ID` / `_SECRET`  | servidor    |  opcional   | Credenciais OAuth do GitHub                            |
+| `AUTH_EMAIL_SERVER` / `_FROM` | servidor    |  opcional   | SMTP + remetente para o e-mail de recuperação de senha |
+| `NEXT_PUBLIC_APP_NAME`        | **cliente** |     ✅      | Nome público da aplicação                              |
+| `NEXT_PUBLIC_APP_URL`         | **cliente** |     ✅      | URL pública da aplicação                               |
 
 ### Passo a passo dos valores
 
@@ -155,7 +168,7 @@ cp .env.example .env.local
    crie um app com callback:
    `http://localhost:3000/api/auth/callback/github`.
 
-5. **E-mail (magic link)** — informe um `AUTH_EMAIL_SERVER`
+5. **E-mail (recuperação de senha)** — informe um `AUTH_EMAIL_SERVER`
    (`smtp://user:pass@host:587`) e um `AUTH_EMAIL_FROM`.
 
 > 🔒 **Segurança:** apenas variáveis com prefixo `NEXT_PUBLIC_` chegam ao

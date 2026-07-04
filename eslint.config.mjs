@@ -9,7 +9,6 @@ const eslintConfig = [
     ignores: [
       '.next/**',
       'node_modules/**',
-      '.archive-horizon/**',
       'drizzle/**',
       'playwright-report/**',
       'test-results/**',

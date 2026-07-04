@@ -43,9 +43,14 @@ export async function Header() {
               </form>
             </>
           ) : (
-            <Button asChild size="sm">
-              <Link href={ROUTES.login}>Entrar</Link>
-            </Button>
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href={ROUTES.login}>Entrar</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href={ROUTES.register}>Criar conta</Link>
+              </Button>
+            </>
           )}
         </nav>
       </div>

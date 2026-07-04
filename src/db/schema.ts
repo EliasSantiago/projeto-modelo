@@ -24,6 +24,8 @@ export const users = pgTable('user', {
   email: text('email').unique().notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   image: text('image'),
+  // Hash da senha (bcrypt). Nulo para contas criadas só via OAuth.
+  passwordHash: text('passwordHash'),
 })
 
 export const accounts = pgTable(
@@ -66,6 +68,20 @@ export const verificationTokens = pgTable(
   (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })],
 )
 
+// --- Recuperação de senha ------------------------------------------------
+export const passwordResetTokens = pgTable('passwordResetToken', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('userId')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  // Guardamos o hash do token, nunca o valor cru (SEC).
+  tokenHash: text('tokenHash').notNull().unique(),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+})
+
 // --- Feature de referência: tasks ---------------------------------------
 export const tasks = pgTable('task', {
   id: text('id')
@@ -82,3 +98,5 @@ export const tasks = pgTable('task', {
 
 export type Task = typeof tasks.$inferSelect
 export type NewTask = typeof tasks.$inferInsert
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert
