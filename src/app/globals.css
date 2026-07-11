@@ -103,4 +103,19 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
+
+  /* Tailwind v4 zera o cursor de botões/[role=button]; restauramos a mãozinha
+     em todos os elementos interativos. Desabilitados voltam a `not-allowed`. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  label[for],
+  select,
+  summary,
+  a:where([href]) {
+    cursor: pointer;
+  }
+  button:disabled,
+  [role='button'][aria-disabled='true'] {
+    cursor: not-allowed;
+  }
 }

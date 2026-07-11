@@ -10,6 +10,7 @@ export const ROUTES = {
   tables: '/dashboard/tables',
   marketplace: '/dashboard/marketplace',
   profile: '/dashboard/profile',
+  settings: '/settings',
 } as const
 
 /**

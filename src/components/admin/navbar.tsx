@@ -9,7 +9,6 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline'
 import { signOutAction } from '@/actions/auth.actions'
-import { ThemeToggle } from '@/components/layout/theme-toggle'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +61,6 @@ export function Navbar({
       </div>
 
       <div className="flex items-center gap-2">
-        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
