@@ -4,7 +4,6 @@ import {
   BoltIcon,
   BookOpenIcon,
   LockClosedIcon,
-  SparklesIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/outline'
 import { Button } from '@/components/ui/button'
@@ -49,15 +48,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative">
         <div className="mx-auto max-w-5xl px-4 pt-20 pb-16 text-center">
-          <span className="text-navy-500 dark:bg-navy-800/60 dark:text-navy-100 inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white/60 px-4 py-1.5 text-sm font-medium backdrop-blur">
-            <SparklesIcon
-              className="text-brand-500 size-4 dark:text-white"
-              aria-hidden
-            />
-            Starter Next.js · Spec-Driven Development
-          </span>
-
-          <h1 className="text-navy-700 mt-6 text-5xl font-bold tracking-tight text-balance sm:text-6xl dark:text-white">
+          <h1 className="text-navy-700 text-5xl font-bold tracking-tight text-balance sm:text-6xl dark:text-white">
             Construa produtos rápido, com{' '}
             <span className="from-navy-600 to-navy-400 dark:to-navy-200 bg-gradient-to-r bg-clip-text text-transparent dark:from-white">
               segurança e escala
@@ -65,7 +56,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-navy-400 mx-auto mt-5 max-w-2xl text-lg text-pretty">
-            {APP.description} Autenticação, banco, camadas, UI e telas prontas —
+            {APP.description} Autenticação, banco, camadas, UI e telas prontas,
             do primeiro commit ao deploy.
           </p>
 

@@ -22,7 +22,7 @@ export type SitePage = {
   icon: ComponentType<SVGProps<SVGSVGElement>>
 }
 
-/** Registro central das páginas — usado na home e na documentação. */
+/** Registro central das páginas, usado na home e na documentação. */
 export const SITE_PAGES: SitePage[] = [
   {
     title: 'Login',

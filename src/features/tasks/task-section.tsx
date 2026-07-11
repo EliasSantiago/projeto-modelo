@@ -26,7 +26,7 @@ function TaskListSkeleton() {
   )
 }
 
-/** Demo estático (visitantes) — a feature real exige login. */
+/** Demo estático (visitantes), a feature real exige login. */
 function DemoTasks() {
   return (
     <div className="flex flex-col gap-4">

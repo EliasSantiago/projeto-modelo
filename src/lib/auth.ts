@@ -12,7 +12,7 @@ import { ROUTES } from '@/constants/routes'
 
 /**
  * Auth.js v5. Login por e-mail/senha (Credentials) + OAuth (Google/GitHub).
- * O provider Credentials exige estratégia de sessão JWT — os provedores OAuth
+ * O provider Credentials exige estratégia de sessão JWT, os provedores OAuth
  * continuam usando o Drizzle adapter para criar/vincular contas.
  */
 const providers: NextAuthConfig['providers'] = [

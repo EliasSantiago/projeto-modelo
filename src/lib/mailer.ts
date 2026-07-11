@@ -5,7 +5,7 @@ type Mail = { to: string; subject: string; text: string; html?: string }
 
 /**
  * Envio de e-mail. Em produção usa SMTP (nodemailer) se configurado; em
- * desenvolvimento (ou sem SMTP) apenas registra no console — útil para pegar
+ * desenvolvimento (ou sem SMTP) apenas registra no console, útil para pegar
  * o link de recuperação sem depender de um provedor real.
  */
 export async function sendMail(mail: Mail): Promise<void> {

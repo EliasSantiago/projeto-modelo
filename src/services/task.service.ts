@@ -6,7 +6,7 @@ import type { Task } from '@/db/schema'
 /**
  * Regras de negócio da feature `tasks`. Recebe sempre o `userId` do chamador
  * (já autenticado) e delega persistência ao repository. Reforça posse do
- * recurso — nunca opera fora do escopo do usuário (SEC-04).
+ * recurso, nunca opera fora do escopo do usuário (SEC-04).
  */
 export class TaskNotFoundError extends Error {
   constructor() {

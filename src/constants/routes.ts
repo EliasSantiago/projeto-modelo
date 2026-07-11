@@ -1,4 +1,4 @@
-/** Rotas centralizadas — fonte única para navegação e gate de proteção. */
+/** Rotas centralizadas, fonte única para navegação e gate de proteção. */
 export const ROUTES = {
   home: '/',
   docs: '/docs',

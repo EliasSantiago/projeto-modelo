@@ -3,7 +3,7 @@ import { taskService } from '@/services/task.service'
 import { TaskItem } from '@/features/tasks/task-item'
 
 /**
- * Lista de tasks do usuário. Server Component assíncrono — busca os dados no
+ * Lista de tasks do usuário. Server Component assíncrono, busca os dados no
  * servidor e é renderizado dentro de um <Suspense> para streaming (RF-06).
  */
 export async function TaskList() {

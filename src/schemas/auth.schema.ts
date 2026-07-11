@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-/** Schemas Zod das telas de autenticação (fonte da verdade — cliente e servidor). */
+/** Schemas Zod das telas de autenticação (fonte da verdade, cliente e servidor). */
 
 const email = z.string().trim().toLowerCase().email('E-mail inválido')
 const password = z

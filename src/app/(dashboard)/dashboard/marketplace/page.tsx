@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Marketplace' }
 
 export default function MarketplacePage() {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       {/* Banner */}
       <div className="from-brand-400 to-brand-600 relative overflow-hidden rounded-[24px] bg-gradient-to-br p-10 text-white">
         <div className="absolute -top-16 -right-10 size-56 rounded-full bg-white/10 blur-2xl" />
@@ -18,7 +18,7 @@ export default function MarketplacePage() {
             Descubra, colecione e venda NFTs
           </h1>
           <p className="mt-2 text-white/80">
-            Marketplace boilerplate — grade de cards pronta para receber seus
+            Marketplace boilerplate, grade de cards pronta para receber seus
             dados reais.
           </p>
           <Button className="text-brand-600 mt-6 bg-white hover:bg-white/90">
@@ -31,7 +31,7 @@ export default function MarketplacePage() {
         <h2 className="text-navy-700 mb-4 text-xl font-bold dark:text-white">
           Em destaque
         </h2>
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {nftItems.map((item) => (
             <Card key={item.id} className="flex flex-col gap-4 p-4">
               <div

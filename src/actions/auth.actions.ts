@@ -45,7 +45,7 @@ export async function loginAction(
     if (error instanceof AuthError) {
       return { error: 'E-mail ou senha inválidos' }
     }
-    throw error // NEXT_REDIRECT (sucesso) — deve propagar.
+    throw error // NEXT_REDIRECT (sucesso), deve propagar.
   }
   return null
 }

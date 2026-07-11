@@ -2,10 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { PROTECTED_PREFIXES, ROUTES } from '@/constants/routes'
 
 /**
- * Proxy (Next.js 16 — substitui o middleware.ts).
+ * Proxy (Next.js 16, substitui o middleware.ts).
  * Faz um gate barato de rotas privadas por presença do cookie de sessão,
  * redirecionando cedo. A autorização REAL acontece no layout protegido e em
- * cada Server Action (defesa em profundidade) — este proxy não confia no
+ * cada Server Action (defesa em profundidade), este proxy não confia no
  * conteúdo do cookie, apenas evita render desnecessário para deslogados.
  */
 const SESSION_COOKIES = [

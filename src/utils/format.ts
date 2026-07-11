@@ -1,5 +1,5 @@
 /**
- * Funções puras, sem dependência de framework — testáveis isoladamente.
+ * Funções puras, sem dependência de framework, testáveis isoladamente.
  */
 
 /** Formata uma data para pt-BR (ex.: "04/07/2026"). */

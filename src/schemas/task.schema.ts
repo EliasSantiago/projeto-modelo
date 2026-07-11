@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 /**
  * Fonte da verdade de validação E tipos da feature `tasks`.
- * Usado no cliente (RHF) e no servidor (Server Actions) — RF-04 / SEC-03.
+ * Usado no cliente (RHF) e no servidor (Server Actions), RF-04 / SEC-03.
  */
 export const createTaskSchema = z.object({
   title: z

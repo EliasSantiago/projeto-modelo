@@ -1,8 +1,8 @@
-# Projeto Modelo — Next.js
+# Projeto Modelo, Next.js
 
 Starter **moderno, escalável, seguro e pronto para produção** para novos
 produtos. Traz autenticação, banco de dados, arquitetura em camadas, UI,
-testes, qualidade e documentação já configurados — e uma feature de
+testes, qualidade e documentação já configurados, e uma feature de
 referência (`tasks`) demonstrando o fluxo completo ponta-a-ponta.
 
 Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
@@ -31,7 +31,7 @@ Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
 
 | Categoria       | Tecnologia                                                                                                                                                             |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Framework**   | [Next.js 16](https://nextjs.org) — App Router, RSC, Server Actions, Turbopack, Cache Components (PPR)                                                                  |
+| **Framework**   | [Next.js 16](https://nextjs.org), App Router, RSC, Server Actions, Turbopack, Cache Components (PPR)                                                                   |
 | **Linguagem**   | [TypeScript 6](https://www.typescriptlang.org) (strict mode)                                                                                                           |
 | **UI runtime**  | [React 19](https://react.dev)                                                                                                                                          |
 | **Estilo**      | [Tailwind CSS v4](https://tailwindcss.com) (CSS-first)                                                                                                                 |
@@ -40,7 +40,7 @@ Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
 | **Formulários** | [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) (validação única no cliente e no servidor)                                                     |
 | **ORM**         | [Drizzle ORM](https://orm.drizzle.team)                                                                                                                                |
 | **Banco**       | [Neon Postgres](https://neon.tech) (serverless)                                                                                                                        |
-| **Auth**        | [Auth.js v5](https://authjs.dev) — e-mail/senha (criar conta, login, recuperação) + OAuth Google/GitHub                                                                |
+| **Auth**        | [Auth.js v5](https://authjs.dev), e-mail/senha (criar conta, login, recuperação) + OAuth Google/GitHub                                                                 |
 | **Estado**      | [Zustand](https://zustand-demo.pmnd.rs) (quando necessário)                                                                                                            |
 | **Testes**      | [Vitest](https://vitest.dev) + [Testing Library](https://testing-library.com) · [Playwright](https://playwright.dev)                                                   |
 | **Qualidade**   | [ESLint](https://eslint.org) · [Prettier](https://prettier.io) · [Husky](https://typicode.github.io/husky) · [lint-staged](https://github.com/lint-staged/lint-staged) |
@@ -66,7 +66,7 @@ schemas · types · lib · utils · constants · providers  (transversais)
 | `services/`                     | Regras de negócio; orquestram repositories              |
 | `repositories/`                 | **Único** acesso ao Drizzle (queries parametrizadas)    |
 | `db/`                           | Schema, client Neon, seed                               |
-| `schemas/`                      | Schemas Zod — fonte da verdade dos tipos                |
+| `schemas/`                      | Schemas Zod, fonte da verdade dos tipos                 |
 | `lib/`                          | Infra: `auth`, `env`, `session`, `safe-action`, `utils` |
 | `hooks/`                        | Hooks de cliente reutilizáveis                          |
 | `providers/`                    | Client providers (tema)                                 |
@@ -76,8 +76,8 @@ Detalhes e justificativas: [`specs/001-projeto-modelo/plan.md`](./specs/001-proj
 
 ## 📋 Pré-requisitos
 
-- **Node.js 20+** (recomendado 24 — veja `.nvmrc`)
-- **pnpm 10+** — instale com `npm install -g pnpm`
+- **Node.js 20+** (recomendado 24, veja `.nvmrc`)
+- **pnpm 10+**, instale com `npm install -g pnpm`
 - Uma conta e um banco no **[Neon](https://neon.tech)** (gratuito para começar)
 - (Opcional) Credenciais OAuth do **Google** e/ou **GitHub**
 - (Opcional) Um servidor **SMTP** para e-mail de recuperação de senha
@@ -113,11 +113,11 @@ Acesse **http://localhost:3000**. 🎉
 
 O starter já inclui o fluxo completo com design split-screen:
 
-- `/register` — criação de conta (nome, e-mail, senha)
-- `/login` — login por e-mail/senha + OAuth
-- `/forgot-password` — solicitar link de recuperação
-- `/reset-password?token=...` — definir nova senha
-- `/dashboard` — área privada com métricas e a feature `tasks`
+- `/register`, criação de conta (nome, e-mail, senha)
+- `/login`, login por e-mail/senha + OAuth
+- `/forgot-password`, solicitar link de recuperação
+- `/reset-password?token=...`, definir nova senha
+- `/dashboard`, área privada com métricas e a feature `tasks`
 
 Após rodar `pnpm db:seed`, use as credenciais de demonstração:
 **`demo@example.com`** / **`password123`**.
@@ -146,11 +146,11 @@ cp .env.example .env.local
 
 ### Passo a passo dos valores
 
-1. **`DATABASE_URL`** — no painel do [Neon](https://neon.tech), copie a
+1. **`DATABASE_URL`**, no painel do [Neon](https://neon.tech), copie a
    connection string **pooled** (algo como
    `postgresql://user:pass@ep-xxx.region.aws.neon.tech/db?sslmode=require`).
 
-2. **`AUTH_SECRET`** — gere um segredo forte:
+2. **`AUTH_SECRET`**, gere um segredo forte:
 
    ```bash
    npx auth secret          # grava direto no .env.local
@@ -158,17 +158,17 @@ cp .env.example .env.local
    openssl rand -base64 32
    ```
 
-3. **Google OAuth** — em
+3. **Google OAuth**, em
    [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials),
    crie um "OAuth Client ID" (Web) e adicione o redirect:
    `http://localhost:3000/api/auth/callback/google`.
 
-4. **GitHub OAuth** — em
+4. **GitHub OAuth**, em
    [GitHub → Developer settings → OAuth Apps](https://github.com/settings/developers),
    crie um app com callback:
    `http://localhost:3000/api/auth/callback/github`.
 
-5. **E-mail (recuperação de senha)** — informe um `AUTH_EMAIL_SERVER`
+5. **E-mail (recuperação de senha)**, informe um `AUTH_EMAIL_SERVER`
    (`smtp://user:pass@host:587`) e um `AUTH_EMAIL_FROM`.
 
 > 🔒 **Segurança:** apenas variáveis com prefixo `NEXT_PUBLIC_` chegam ao
@@ -192,7 +192,7 @@ cp .env.example .env.local
 
 ## 🔐 Segurança (OWASP Top 10)
 
-Controles já implementados — rastreáveis em
+Controles já implementados, rastreáveis em
 [`spec.md`](./specs/001-projeto-modelo/spec.md) (seção 8):
 
 - Separação de env servidor/cliente + `server-only` (nada de secret no bundle).
@@ -227,10 +227,10 @@ pnpm test:e2e    # fluxo de login/gate de rota (Playwright)
 
 Este projeto foi construído seguindo SDD. Os artefatos:
 
-- [`.specify/memory/constitution.md`](./.specify/memory/constitution.md) — princípios inegociáveis
-- [`specs/001-projeto-modelo/spec.md`](./specs/001-projeto-modelo/spec.md) — o quê e por quê
-- [`specs/001-projeto-modelo/plan.md`](./specs/001-projeto-modelo/plan.md) — como (decisões técnicas)
-- [`specs/001-projeto-modelo/tasks.md`](./specs/001-projeto-modelo/tasks.md) — tarefas rastreáveis
+- [`.specify/memory/constitution.md`](./.specify/memory/constitution.md), princípios inegociáveis
+- [`specs/001-projeto-modelo/spec.md`](./specs/001-projeto-modelo/spec.md), o quê e por quê
+- [`specs/001-projeto-modelo/plan.md`](./specs/001-projeto-modelo/plan.md), como (decisões técnicas)
+- [`specs/001-projeto-modelo/tasks.md`](./specs/001-projeto-modelo/tasks.md), tarefas rastreáveis
 
 Para uma nova feature, siga a mesma ordem: **constitution → spec → plan →
 tasks → implementação**. Veja [`AGENTS.md`](./AGENTS.md).

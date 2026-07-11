@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: 'Data Tables' }
 
 export default function TablesPage() {
   return (
-    <div className="mx-auto max-w-6xl">
+    <div>
       <Card>
         <CardHeader>
           <CardTitle>Projetos</CardTitle>

@@ -63,7 +63,7 @@ export const authService = {
 
   /**
    * Gera um token de recuperação e envia o link por e-mail. Nunca revela se o
-   * e-mail existe (evita enumeração de usuários — SEC).
+   * e-mail existe (evita enumeração de usuários, SEC).
    */
   async requestPasswordReset(email: string): Promise<void> {
     const user = await userRepository.findByEmail(email)
@@ -80,7 +80,7 @@ export const authService = {
     const link = `${APP.url}${ROUTES.resetPassword}?token=${token}`
     await sendMail({
       to: user.email,
-      subject: `${APP.name} — Recuperação de senha`,
+      subject: `${APP.name}, Recuperação de senha`,
       text: `Para redefinir sua senha, acesse: ${link}\nO link expira em 30 minutos.`,
     })
   },

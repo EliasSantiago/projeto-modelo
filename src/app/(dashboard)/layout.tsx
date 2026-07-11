@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/session'
 
 /**
  * Layout das páginas de exemplo (admin shell). Estas telas são PÚBLICAS para
- * servir de documentação — não exigem login. A sessão é opcional: com usuário,
+ * servir de documentação, não exigem login. A sessão é opcional: com usuário,
  * a navbar mostra o menu da conta; sem usuário, um acesso de visitante.
  * Para proteger rotas reais, use `requireUser` e adicione o prefixo em
  * `PROTECTED_PREFIXES` (proxy.ts).

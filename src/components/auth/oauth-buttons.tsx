@@ -1,7 +1,7 @@
 import { signInWithProvider } from '@/actions/auth.actions'
 import { enabledProviders } from '@/lib/auth'
 
-/** Botões de login social (Google/GitHub) — renderizados só se configurados. */
+/** Botões de login social (Google/GitHub), renderizados só se configurados. */
 export function OAuthButtons() {
   if (!enabledProviders.google && !enabledProviders.github) return null
 

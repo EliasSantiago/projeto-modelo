@@ -2,7 +2,7 @@ import next from 'eslint-config-next'
 
 /**
  * ESLint flat config (ESLint 10). eslint-config-next 16 já exporta um array
- * de flat config nativo — não é necessário FlatCompat.
+ * de flat config nativo, não é necessário FlatCompat.
  */
 const eslintConfig = [
   {

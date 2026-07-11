@@ -9,7 +9,7 @@ export default function PublicLayout({
 }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* Header lê a sessão (cookies) — dinâmico, sob Suspense para PPR. */}
+      {/* Header lê a sessão (cookies), dinâmico, sob Suspense para PPR. */}
       <Suspense fallback={<HeaderSkeleton />}>
         <Header />
       </Suspense>

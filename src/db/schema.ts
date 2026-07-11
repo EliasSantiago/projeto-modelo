@@ -9,7 +9,7 @@ import {
 import type { AdapterAccountType } from 'next-auth/adapters'
 
 /**
- * Schema Drizzle — fonte da verdade do banco.
+ * Schema Drizzle, fonte da verdade do banco.
  * Tabelas do Auth.js (users/accounts/sessions/verificationTokens) seguem o
  * formato esperado pelo @auth/drizzle-adapter. Tabela `tasks` é a feature
  * de referência.

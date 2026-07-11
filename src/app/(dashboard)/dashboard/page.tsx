@@ -19,7 +19,9 @@ import {
 import { TaskSection } from '@/features/tasks/task-section'
 import {
   dashboardWidgets,
+  revenueLabels,
   revenueSeries,
+  weeklyLabels,
   weeklySeries,
 } from '@/features/admin/mock-data'
 
@@ -34,7 +36,7 @@ const widgetIcons = [
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       {/* Widgets de métricas (boilerplate) */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {dashboardWidgets.map((w, i) => (
@@ -55,7 +57,12 @@ export default function DashboardPage() {
             <CardTitle className="text-2xl">R$ 34.500</CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-6">
-            <AreaChart data={revenueSeries} />
+            <AreaChart
+              data={revenueSeries}
+              labels={revenueLabels}
+              prefix="R$ "
+              suffix=" mil"
+            />
           </CardContent>
         </Card>
 
@@ -65,7 +72,11 @@ export default function DashboardPage() {
             <CardTitle className="text-2xl">+18%</CardTitle>
           </CardHeader>
           <CardContent className="p-0 pt-6">
-            <BarChart data={weeklySeries} />
+            <BarChart
+              data={weeklySeries}
+              labels={weeklyLabels}
+              suffix=" ações"
+            />
           </CardContent>
         </Card>
       </div>

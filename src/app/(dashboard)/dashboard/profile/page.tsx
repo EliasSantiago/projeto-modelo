@@ -24,7 +24,7 @@ export default async function ProfilePage() {
   const initials = displayName.slice(0, 2).toUpperCase()
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       {/* Cabeçalho do perfil */}
       <Card className="overflow-hidden">
         <div className="from-brand-400 to-brand-600 h-40 bg-gradient-to-br" />

@@ -18,7 +18,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 
 /**
  * Garante um usuário autenticado; caso contrário redireciona para login.
- * Enforcement real de autorização (defesa em profundidade) — SEC-04.
+ * Enforcement real de autorização (defesa em profundidade), SEC-04.
  */
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser()

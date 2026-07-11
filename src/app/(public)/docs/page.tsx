@@ -75,7 +75,7 @@ export default function DocsPage() {
             </h3>
             <p className="text-navy-400 mt-1 text-sm">
               As telas de exemplo (dashboard, tabelas, marketplace, perfil) são
-              públicas — abrem direto, sem login, para servir de documentação.
+              públicas, abrem direto, sem login, para servir de documentação.
             </p>
           </Card>
           <Card className="p-5">

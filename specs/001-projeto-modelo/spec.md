@@ -1,4 +1,4 @@
-# Especificação — Projeto Modelo Next.js (Feature 001)
+# Especificação, Projeto Modelo Next.js (Feature 001)
 
 - **ID:** 001-projeto-modelo
 - **Status:** Aprovada
@@ -17,11 +17,11 @@ ponta-a-ponta.
 
 ## 2. Objetivos
 
-- **O1** — Base técnica reutilizável que times clonam e começam a produzir no mesmo dia.
-- **O2** — Segurança "by default" comprovável (OWASP Top 10) desde o commit inicial.
-- **O3** — Arquitetura em camadas clara, escalável e testável.
-- **O4** — Fluxo completo demonstrado (auth + CRUD com validação, persistência e UI).
-- **O5** — Deploy em Vercel + Neon sem ajustes manuais além de variáveis de ambiente.
+- **O1**, Base técnica reutilizável que times clonam e começam a produzir no mesmo dia.
+- **O2**, Segurança "by default" comprovável (OWASP Top 10) desde o commit inicial.
+- **O3**, Arquitetura em camadas clara, escalável e testável.
+- **O4**, Fluxo completo demonstrado (auth + CRUD com validação, persistência e UI).
+- **O5**, Deploy em Vercel + Neon sem ajustes manuais além de variáveis de ambiente.
 
 ## 3. Fora de Escopo
 
@@ -31,9 +31,9 @@ ponta-a-ponta.
 
 ## 4. Personas
 
-- **Dev do time** — clona, roda `pnpm dev`, entende a estrutura em minutos.
-- **Usuário final** — cria conta / faz login (e-mail, Google, GitHub) e usa a feature.
-- **Revisor de segurança** — audita e encontra os controles OWASP já no lugar.
+- **Dev do time**, clona, roda `pnpm dev`, entende a estrutura em minutos.
+- **Usuário final**, cria conta / faz login (e-mail, Google, GitHub) e usa a feature.
+- **Revisor de segurança**, audita e encontra os controles OWASP já no lugar.
 
 ## 5. Requisitos Funcionais
 
@@ -62,8 +62,8 @@ ponta-a-ponta.
 
 ## 7. Modelo de Domínio (feature de referência)
 
-- **User** — identidade gerenciada pelo Auth.js (tabelas `users`, `accounts`, `sessions`, `verification_tokens`).
-- **Task** — `id`, `userId` (FK → users), `title`, `completed`, `createdAt`, `updatedAt`.
+- **User**, identidade gerenciada pelo Auth.js (tabelas `users`, `accounts`, `sessions`, `verification_tokens`).
+- **Task**, `id`, `userId` (FK → users), `title`, `completed`, `createdAt`, `updatedAt`.
   Um usuário possui muitas tasks; uma task pertence a um usuário e só é visível/editável por ele.
 
 ## 8. Requisitos de Segurança (rastreáveis)

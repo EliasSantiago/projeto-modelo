@@ -5,7 +5,24 @@
 
 export const revenueSeries = [18, 24, 22, 30, 28, 38, 34, 44, 40, 52, 48, 60]
 
+export const revenueLabels = [
+  'Jan',
+  'Fev',
+  'Mar',
+  'Abr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Set',
+  'Out',
+  'Nov',
+  'Dez',
+]
+
 export const weeklySeries = [12, 20, 14, 26, 18, 30, 22]
+
+export const weeklyLabels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
 
 export type TableRow = {
   name: string

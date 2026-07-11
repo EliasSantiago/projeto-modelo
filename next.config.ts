@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // Partial Prerendering / Cache Components (Next.js 16+).
   cacheComponents: true,
-  // Falha o build de produção em erros de tipo — qualidade é um gate.
+  // Falha o build de produção em erros de tipo, qualidade é um gate.
   typescript: { ignoreBuildErrors: false },
   images: {
     remotePatterns: [

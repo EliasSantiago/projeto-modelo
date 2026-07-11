@@ -1,4 +1,4 @@
-# Plano Técnico — Projeto Modelo Next.js (Feature 001)
+# Plano Técnico, Projeto Modelo Next.js (Feature 001)
 
 - **Referencia:** [spec.md](./spec.md) · [constitution.md](../../.specify/memory/constitution.md)
 - **Data:** 2026-07-04
@@ -34,12 +34,12 @@
 src/
   app/                 # App Router: rotas, layouts, loading, error
     (public)/          #   grupo público (landing, auth)
-    (protected)/       #   grupo privado (dashboard) — gated por proxy/layout
+    (protected)/       #   grupo privado (dashboard), gated por proxy/layout
     api/               #   route handlers (webhooks/auth se necessário)
   components/
     ui/                # ShadCN/UI (apresentacional puro)
     layout/            # header, footer, theme-toggle
-  features/            # feature-slices (ex.: tasks) — UI + wiring da feature
+  features/            # feature-slices (ex.: tasks), UI + wiring da feature
   services/            # regras de negócio; orquestram repositories
   repositories/        # ÚNICO acesso ao Drizzle (queries parametrizadas)
   db/                  # schema Drizzle, client, migrations, seed
@@ -60,7 +60,7 @@ specs/                 # artefatos SDD (spec/plan/tasks)
 Regra de dependência (Princípio IV): UI → features → actions → services → repositories → db.
 `schemas`, `types`, `lib`, `utils`, `constants` são transversais e **não** importam UI.
 
-## 3. Decisões Arquiteturais (justificadas — Princípio VII)
+## 3. Decisões Arquiteturais (justificadas, Princípio VII)
 
 - **App Router + RSC como padrão.** Menos JS no cliente, dados no servidor,
   streaming nativo. `'use client'` só em ilhas interativas.

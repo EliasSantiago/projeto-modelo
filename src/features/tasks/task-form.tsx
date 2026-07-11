@@ -10,7 +10,7 @@ import { createTaskSchema, type CreateTaskInput } from '@/schemas/task.schema'
 
 /**
  * Formulário de criação de task. Valida com Zod no cliente (RHF) e a Server
- * Action revalida com o MESMO schema no servidor — dupla validação (RF-04).
+ * Action revalida com o MESMO schema no servidor, dupla validação (RF-04).
  */
 export function TaskForm() {
   const [isPending, startTransition] = useTransition()
