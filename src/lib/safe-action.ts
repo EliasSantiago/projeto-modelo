@@ -1,6 +1,7 @@
 import 'server-only'
 import { z } from 'zod'
 import { getCurrentUser, hasRole, type SessionUser } from '@/lib/session'
+import { logger } from '@/lib/logger'
 import type { UserRole } from '@/db/schema'
 
 /**
@@ -57,7 +58,7 @@ export function authAction<TSchema extends z.ZodType, TOutput>(
       return { ok: true, data }
     } catch (err) {
       // Log detalhado só no servidor; cliente recebe mensagem genérica.
-      console.error('[authAction] erro:', err)
+      logger.error('Server Action falhou', err, { userId: user.id })
       const message =
         err instanceof Error && err.name === 'TaskNotFoundError'
           ? err.message

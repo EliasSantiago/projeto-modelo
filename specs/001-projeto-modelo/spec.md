@@ -81,6 +81,8 @@ ponta-a-ponta.
 | SEC-09 | Security headers em todas as rotas                   | CSP, HSTS, X-Frame-Options, nosniff, Referrer/Permissions-Policy              |
 | SEC-10 | Anti-enumeração de usuários                          | Recuperação responde igual exista ou não a conta, inclusive em falha de envio |
 | SEC-11 | Falha de e-mail nunca é silenciosa em produção       | Sem SMTP configurado, o fluxo lança em vez de descartar a mensagem            |
+| SEC-12 | Autorização por papel (RBAC)                         | `requireRole`/`adminAction`; papel vem do banco, nunca do cliente             |
+| SEC-13 | Log sem dado sensível                                | `lib/logger.ts` mascara senha, token e secret em qualquer profundidade        |
 
 ## 9. Critérios de Aceite Globais (Definition of Done)
 

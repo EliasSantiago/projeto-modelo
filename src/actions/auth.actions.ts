@@ -16,6 +16,7 @@ import {
   resetPasswordSchema,
 } from '@/schemas/auth.schema'
 import { checkRateLimit, rateLimitMessage } from '@/lib/rate-limit'
+import { logger } from '@/lib/logger'
 import { ROUTES } from '@/constants/routes'
 
 /** Estado padronizado dos formulários de auth (para `useActionState`). */
@@ -73,7 +74,7 @@ export async function registerAction(
     if (error instanceof EmailInUseError) {
       return { fieldErrors: { email: ['E-mail já cadastrado'] } }
     }
-    console.error('[registerAction]', error)
+    logger.error('Falha ao criar conta', error)
     return { error: 'Não foi possível criar a conta' }
   }
 
@@ -108,7 +109,7 @@ export async function requestPasswordResetAction(
   } catch (error) {
     // Configuração ausente é falha nossa, não do usuário. A mensagem é a
     // mesma para qualquer e-mail, então não revela quais contas existem.
-    console.error('[requestPasswordResetAction]', error)
+    logger.error('Falha ao solicitar recuperação de senha', error)
     return {
       error:
         'Serviço de e-mail indisponível no momento. Tente novamente mais tarde.',
@@ -135,7 +136,7 @@ export async function resetPasswordAction(
     if (error instanceof InvalidResetTokenError) {
       return { error: 'Token inválido ou expirado. Solicite um novo link.' }
     }
-    console.error('[resetPasswordAction]', error)
+    logger.error('Falha ao redefinir senha', error)
     return { error: 'Não foi possível redefinir a senha' }
   }
   redirect(`${ROUTES.login}?reset=success`)

@@ -210,6 +210,11 @@ Controles já implementados, rastreáveis em
   `Permissions-Policy`.
 - Anti-enumeração de usuários na recuperação de senha: a resposta é idêntica
   exista ou não a conta, inclusive quando o envio falha.
+- **RBAC**: papéis `user`/`admin` no banco, `requireRole`/`requireAdmin`
+  (`lib/session.ts`) e `adminAction` (`lib/safe-action.ts`). `/admin` é a
+  rota protegida de referência.
+- **Log estruturado** (`lib/logger.ts`) mascarando senha, token e secret,
+  com gancho para Sentry (veja o exemplo no fim do arquivo).
 
 > ⚠️ **Antes de ir para produção**, leia os dois pontos em aberto:
 >
@@ -219,13 +224,19 @@ Controles já implementados, rastreáveis em
 >   comentada no `next.config.ts`.
 > - Sem `UPSTASH_REDIS_REST_*`, o rate limiting usa contador em memória e
 >   **não** é compartilhado entre instâncias serverless.
+>
+> A lista completa de limitações conhecidas está em
+> [`SECURITY.md`](./SECURITY.md).
 
 ## 🧪 Testes
 
 ```bash
 pnpm test        # schemas, services (repo mockado), utils, componentes
-pnpm test:e2e    # fluxo de login/gate de rota (Playwright)
+pnpm test:e2e    # gate de rota e sessão forjada (Playwright)
 ```
+
+O CI roda os dois em jobs separados, mais `pnpm audit`. O E2E sobe o **build
+de produção**, não o dev server: é o artefato que vai ao ar.
 
 ## ☁️ Deploy (Vercel + Neon)
 
@@ -250,7 +261,23 @@ Este projeto foi construído seguindo SDD. Os artefatos:
 - [`specs/001-projeto-modelo/tasks.md`](./specs/001-projeto-modelo/tasks.md), tarefas rastreáveis
 
 Para uma nova feature, siga a mesma ordem: **constitution → spec → plan →
-tasks → implementação**. Veja [`AGENTS.md`](./AGENTS.md).
+tasks → implementação**.
+
+```bash
+# Com Claude Code: numera a pasta, copia o template e conduz a spec
+/nova-feature relatorios-de-vendas
+
+# Manualmente
+cp -r specs/_template specs/002-relatorios-de-vendas
+```
+
+- [`specs/_template/`](./specs/_template), esqueleto comentado dos três
+  documentos, com as regras de cada etapa embutidas
+- [`.claude/commands/nova-feature.md`](./.claude/commands/nova-feature.md),
+  o slash command
+
+Cada etapa depende do "ok" na anterior. Detalhes em
+[`AGENTS.md`](./AGENTS.md) e [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## 👤 Autor
 

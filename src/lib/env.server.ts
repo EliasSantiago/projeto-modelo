@@ -35,7 +35,8 @@ const serverEnvSchema = z.object({
 const parsed = serverEnvSchema.safeParse(process.env)
 
 if (!parsed.success) {
-  // Log detalhado só no servidor; nunca exposto ao cliente (SEC-07).
+  // `console` de propósito: o logger depende deste módulo, então ainda não
+  // existe neste ponto. Detalhe fica só no servidor (SEC-07).
   console.error(
     '❌ Variáveis de ambiente do servidor inválidas:',
     z.flattenError(parsed.error).fieldErrors,

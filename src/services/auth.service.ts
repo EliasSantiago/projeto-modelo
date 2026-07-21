@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { userRepository } from '@/repositories/user.repository'
 import { passwordResetRepository } from '@/repositories/password-reset.repository'
 import { assertMailerConfigured, sendMail } from '@/lib/mailer'
+import { logger } from '@/lib/logger'
 import { APP } from '@/constants/app'
 import { ROUTES } from '@/constants/routes'
 import type { User, UserRole } from '@/db/schema'
@@ -103,7 +104,9 @@ export const authService = {
       // Falha de entrega só ocorre quando a conta existe: propagá-la para a UI
       // reabriria a enumeração. O operador vê no log; o usuário vê a mesma
       // mensagem neutra de sempre e pode pedir um novo link.
-      console.error('[authService.requestPasswordReset] entrega falhou:', error)
+      logger.error('Entrega do e-mail de recuperação falhou', error, {
+        userId: user.id,
+      })
     }
   },
 

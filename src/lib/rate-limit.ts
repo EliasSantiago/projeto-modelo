@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { serverEnv } from '@/lib/env.server'
+import { logger } from '@/lib/logger'
 
 /**
  * Rate limiting para endpoints públicos (login, cadastro, recuperação de
@@ -46,10 +47,10 @@ function warnIfMemoryInProduction(): void {
   if (usingRedis || warnedAboutMemory) return
   warnedAboutMemory = true
   if (serverEnv.NODE_ENV === 'production') {
-    console.warn(
-      '[rate-limit] UPSTASH_REDIS_REST_* ausentes: usando contador em ' +
-        'memória. Em serverless o limite NÃO é compartilhado entre ' +
-        'instâncias e a proteção fica parcial. Configure o Redis.',
+    logger.warn(
+      'Rate limiting em memória: UPSTASH_REDIS_REST_* ausentes. Em ' +
+        'serverless o limite não é compartilhado entre instâncias e a ' +
+        'proteção fica parcial. Configure o Redis.',
     )
   }
 }
@@ -150,7 +151,9 @@ export async function checkRateLimit(
         : Math.max(0, Math.ceil((reset - Date.now()) / 1000)),
     }
   } catch (error) {
-    console.error('[rate-limit] Redis indisponível, liberando request:', error)
+    logger.error('Redis indisponível, liberando a requisição', error, {
+      bucket,
+    })
     return { success: true, retryAfter: 0 }
   }
 }

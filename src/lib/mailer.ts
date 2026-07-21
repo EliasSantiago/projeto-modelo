@@ -1,5 +1,6 @@
 import 'server-only'
 import { serverEnv } from '@/lib/env.server'
+import { logger } from '@/lib/logger'
 
 type Mail = { to: string; subject: string; text: string; html?: string }
 
@@ -77,7 +78,7 @@ export async function sendMail(mail: Mail): Promise<void> {
     })
   } catch (error) {
     // Detalhe do SMTP fica no log do servidor, nunca sobe para a UI.
-    console.error('[mailer] falha na entrega:', error)
+    logger.error('Falha na entrega SMTP', error, { to: mail.to })
     throw new MailDeliveryError(error)
   }
 }
