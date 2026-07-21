@@ -13,6 +13,7 @@ import {
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
+  resendVerificationSchema,
   resetPasswordSchema,
 } from '@/schemas/auth.schema'
 import { checkRateLimit, rateLimitMessage } from '@/lib/rate-limit'
@@ -140,6 +141,43 @@ export async function resetPasswordAction(
     return { error: 'Não foi possível redefinir a senha' }
   }
   redirect(`${ROUTES.login}?reset=success`)
+}
+
+/**
+ * Reenvia o link de confirmação de e-mail.
+ *
+ * A mensagem de sucesso é a mesma para endereço inexistente, já verificado ou
+ * recém-notificado: qualquer diferença transformaria este formulário num
+ * verificador de quem tem conta aqui (SEC-17).
+ */
+export async function resendVerificationAction(
+  _prev: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const parsed = resendVerificationSchema.safeParse(
+    Object.fromEntries(formData),
+  )
+  if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
+
+  // Só por IP: incluir o e-mail na chave deixaria um atacante disparar N
+  // mensagens para cada endereço que conhecesse (SEC-16).
+  const limit = await checkRateLimit('emailVerification')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
+
+  try {
+    await authService.resendVerificationEmail(parsed.data.email)
+  } catch (error) {
+    logger.error('Falha ao reenviar confirmação de e-mail', error)
+    return {
+      error:
+        'Serviço de e-mail indisponível no momento. Tente novamente mais tarde.',
+    }
+  }
+
+  return {
+    message:
+      'Se houver uma conta pendente com esse e-mail, enviamos um novo link.',
+  }
 }
 
 /** Inicia o fluxo OAuth de um provedor a partir de um <form>. */

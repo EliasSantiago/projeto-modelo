@@ -15,6 +15,13 @@
       "when": 1784595244324,
       "tag": "0001_dark_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784596636992,
+      "tag": "0002_glorious_ma_gnuci",
+      "breakpoints": true
     }
   ]
 }

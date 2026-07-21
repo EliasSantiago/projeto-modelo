@@ -83,6 +83,16 @@ export const authConfig = {
       },
     },
   },
+  events: {
+    /**
+     * Conta criada por provedor social já nasce verificada: Google e GitHub
+     * só expõem endereço que eles mesmos confirmaram, então pedir nova
+     * confirmação seria atrito sem ganho (RF-12).
+     */
+    async linkAccount({ user }) {
+      if (user.id) await authService.markEmailVerified(user.id)
+    },
+  },
   callbacks: {
     /**
      * Persiste id e papel no token (SEC-04, SEC-12).
@@ -100,6 +110,9 @@ export const authConfig = {
         token.role =
           (user as { role?: UserRole }).role ??
           (await authService.findRole(user.id))
+        // `emailVerified` vem como Date do adapter; o JWT só carrega JSON.
+        const verified = (user as { emailVerified?: Date | null }).emailVerified
+        token.emailVerified = verified ? verified.toISOString() : null
       }
       return token
     },
@@ -107,6 +120,10 @@ export const authConfig = {
       if (session.user && typeof token.id === 'string') {
         session.user.id = token.id
         session.user.role = (token.role as UserRole | undefined) ?? 'user'
+        session.user.emailVerified =
+          typeof token.emailVerified === 'string'
+            ? new Date(token.emailVerified)
+            : null
       }
       return session
     },

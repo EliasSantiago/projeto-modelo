@@ -51,7 +51,9 @@ Estão documentadas de propósito, não são descuido:
 - **Papel em cache no JWT.** O papel é lido no sign-in, então revogação de
   privilégio só vale no próximo login. Para revogação imediata, leia o papel
   a cada request ou invalide a sessão.
-- **Sem verificação de e-mail.** A coluna `emailVerified` existe mas nenhum
-  fluxo a preenche: o cadastro aceita e-mail que a pessoa não controla.
+- **Conta não verificada não é bloqueada.** A confirmação de e-mail existe e
+  funciona, mas não impede login por padrão: impor a política quebraria contas
+  criadas antes da feature. Use `requireVerifiedUser()` nas rotas que exigem
+  um canal de contato confiável.
 - **`next-auth` em versão beta** (`5.0.0-beta.x`), estado atual do ecossistema
   Auth.js v5.

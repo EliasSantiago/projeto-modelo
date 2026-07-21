@@ -7,6 +7,15 @@ vi.mock('@/repositories/user.repository', () => ({
     findById: vi.fn(),
     create: vi.fn(),
     updatePasswordHash: vi.fn(),
+    markEmailVerified: vi.fn(),
+  },
+}))
+
+vi.mock('@/repositories/email-verification.repository', () => ({
+  emailVerificationRepository: {
+    create: vi.fn(),
+    findValid: vi.fn(),
+    deleteForUser: vi.fn(),
   },
 }))
 
@@ -25,15 +34,18 @@ vi.mock('@/lib/mailer', () => ({
 
 import { userRepository } from '@/repositories/user.repository'
 import { passwordResetRepository } from '@/repositories/password-reset.repository'
+import { emailVerificationRepository } from '@/repositories/email-verification.repository'
 import { assertMailerConfigured, sendMail } from '@/lib/mailer'
 import {
   authService,
   EmailInUseError,
   InvalidResetTokenError,
+  InvalidVerificationTokenError,
 } from './auth.service'
 
 const mockUsers = vi.mocked(userRepository)
 const mockTokens = vi.mocked(passwordResetRepository)
+const mockVerify = vi.mocked(emailVerificationRepository)
 const mockSendMail = vi.mocked(sendMail)
 const mockAssertMailer = vi.mocked(assertMailerConfigured)
 
@@ -236,6 +248,179 @@ describe('authService.resetPassword', () => {
     await expect(bcrypt.compare('nova-senha-123', newHash)).resolves.toBe(true)
     // Token de uso único: some depois de aplicado.
     expect(mockTokens.deleteForUser).toHaveBeenCalledWith('user-1')
+  })
+})
+
+describe('authService.sendVerificationEmail', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockSendMail.mockReset()
+  })
+
+  it('guarda o hash do token, nunca o valor cru (SEC-14)', async () => {
+    await authService.sendVerificationEmail(existingUser)
+
+    const [, storedHash] = mockVerify.create.mock.calls[0]!
+    const rawToken =
+      mockSendMail.mock.calls[0]![0].text.match(/token=([a-f0-9]+)/)?.[1]
+
+    expect(rawToken).toBeDefined()
+    expect(storedHash).not.toBe(rawToken)
+    expect(storedHash).toHaveLength(64) // sha256 hex
+  })
+
+  it('invalida convites anteriores ao emitir um novo', async () => {
+    await authService.sendVerificationEmail(existingUser)
+    expect(mockVerify.deleteForUser).toHaveBeenCalledWith('user-1')
+  })
+
+  it('emite convite com validade futura', async () => {
+    await authService.sendVerificationEmail(existingUser)
+
+    const [, , expires] = mockVerify.create.mock.calls[0]!
+    expect(expires.getTime()).toBeGreaterThan(Date.now())
+  })
+})
+
+describe('authService.verifyEmail', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('recusa token inválido ou expirado (SEC-15)', async () => {
+    // `findValid` já filtra expirados na query: ausência cobre os dois casos.
+    mockVerify.findValid.mockResolvedValue(null)
+
+    await expect(authService.verifyEmail('qualquer')).rejects.toBeInstanceOf(
+      InvalidVerificationTokenError,
+    )
+    expect(mockUsers.markEmailVerified).not.toHaveBeenCalled()
+  })
+
+  it('procura pelo hash, não pelo token recebido', async () => {
+    mockVerify.findValid.mockResolvedValue(null)
+    await authService.verifyEmail('token-cru').catch(() => undefined)
+
+    expect(mockVerify.findValid).toHaveBeenCalledWith(
+      expect.not.stringContaining('token-cru'),
+    )
+  })
+
+  it('verifica a conta dona do convite, não outra (SEC-18)', async () => {
+    mockVerify.findValid.mockResolvedValue({
+      id: 'v1',
+      userId: 'dono-do-token',
+      tokenHash: 'hash',
+      expires: new Date(Date.now() + 60_000),
+      createdAt: new Date(),
+    })
+
+    await authService.verifyEmail('token-cru')
+
+    expect(mockUsers.markEmailVerified).toHaveBeenCalledWith('dono-do-token')
+  })
+
+  it('queima o convite depois de usar, tornando o link de uso único', async () => {
+    mockVerify.findValid.mockResolvedValue({
+      id: 'v1',
+      userId: 'user-1',
+      tokenHash: 'hash',
+      expires: new Date(Date.now() + 60_000),
+      createdAt: new Date(),
+    })
+
+    await authService.verifyEmail('token-cru')
+
+    expect(mockVerify.deleteForUser).toHaveBeenCalledWith('user-1')
+  })
+})
+
+describe('authService.resendVerificationEmail', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockAssertMailer.mockReset()
+    mockSendMail.mockReset()
+  })
+
+  it('não envia nada para e-mail inexistente (SEC-17)', async () => {
+    mockUsers.findByEmail.mockResolvedValue(null)
+
+    await expect(
+      authService.resendVerificationEmail('nao@existe.com'),
+    ).resolves.toBeUndefined()
+    expect(mockSendMail).not.toHaveBeenCalled()
+  })
+
+  it('não reenvia para conta já verificada, e não acusa isso', async () => {
+    mockUsers.findByEmail.mockResolvedValue({
+      ...existingUser,
+      emailVerified: new Date(),
+    })
+
+    await expect(
+      authService.resendVerificationEmail('fulano@example.com'),
+    ).resolves.toBeUndefined()
+    expect(mockSendMail).not.toHaveBeenCalled()
+  })
+
+  it('envia para conta pendente', async () => {
+    mockUsers.findByEmail.mockResolvedValue(existingUser)
+
+    await authService.resendVerificationEmail('fulano@example.com')
+
+    expect(mockSendMail).toHaveBeenCalled()
+  })
+
+  it('checa a configuração antes de consultar o usuário (SEC-17)', async () => {
+    mockAssertMailer.mockImplementation(() => {
+      throw new Error('não configurado')
+    })
+
+    await expect(
+      authService.resendVerificationEmail('fulano@example.com'),
+    ).rejects.toThrow()
+    expect(mockUsers.findByEmail).not.toHaveBeenCalled()
+  })
+
+  it('falha de entrega não vaza para quem chamou', async () => {
+    mockUsers.findByEmail.mockResolvedValue(existingUser)
+    mockSendMail.mockRejectedValue(new Error('provedor fora do ar'))
+
+    await expect(
+      authService.resendVerificationEmail('fulano@example.com'),
+    ).resolves.toBeUndefined()
+  })
+})
+
+describe('authService.register, envio de confirmação', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockSendMail.mockReset()
+  })
+
+  it('dispara o e-mail de confirmação ao criar a conta', async () => {
+    mockUsers.findByEmail.mockResolvedValue(null)
+    mockUsers.create.mockResolvedValue(existingUser)
+
+    await authService.register({
+      name: 'Novo',
+      email: 'novo@example.com',
+      password: 'senha-forte-123',
+    })
+
+    expect(mockSendMail).toHaveBeenCalled()
+  })
+
+  it('cria a conta mesmo se o provedor de e-mail estiver fora (SEC-19)', async () => {
+    mockUsers.findByEmail.mockResolvedValue(null)
+    mockUsers.create.mockResolvedValue(existingUser)
+    mockSendMail.mockRejectedValue(new Error('provedor fora do ar'))
+
+    await expect(
+      authService.register({
+        name: 'Novo',
+        email: 'novo@example.com',
+        password: 'senha-forte-123',
+      }),
+    ).resolves.toMatchObject({ id: 'user-1' })
   })
 })
 

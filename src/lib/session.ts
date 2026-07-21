@@ -7,6 +7,8 @@ import type { UserRole } from '@/db/schema'
 export type SessionUser = {
   id: string
   role: UserRole
+  /** Quando o endereço foi confirmado, ou `null` se ainda não foi. */
+  emailVerified: Date | null
   name?: string | null
   email?: string | null
   image?: string | null
@@ -60,4 +62,21 @@ export async function requireRole(minimum: UserRole): Promise<SessionUser> {
 /** Atalho para o papel administrativo. */
 export function requireAdmin(): Promise<SessionUser> {
   return requireRole('admin')
+}
+
+/**
+ * Garante autenticação E endereço de e-mail confirmado.
+ *
+ * NÃO é aplicado por padrão em lugar nenhum (plan.md 002, D4): impor a
+ * política quebraria contas criadas antes desta feature, e a decisão é de
+ * quem adota o template. Use nas rotas que realmente exigem um canal de
+ * contato confiável — cobrança, convite de equipe, exportação de dados.
+ *
+ * Quem não confirmou é levado à tela de confirmação, não a um 403: aqui há
+ * uma ação concreta que a pessoa pode tomar.
+ */
+export async function requireVerifiedUser(): Promise<SessionUser> {
+  const user = await requireUser()
+  if (!user.emailVerified) redirect(ROUTES.verifyEmail)
+  return user
 }

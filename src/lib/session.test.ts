@@ -19,9 +19,13 @@ import { hasRole, requireRole, requireUser, type SessionUser } from './session'
 
 const mockAuth = vi.mocked(auth as unknown as () => Promise<unknown>)
 
-const asUser = (role: SessionUser['role']): SessionUser => ({
+const asUser = (
+  role: SessionUser['role'],
+  emailVerified: Date | null = new Date(),
+): SessionUser => ({
   id: 'user-1',
   role,
+  emailVerified,
   email: 'x@example.com',
 })
 

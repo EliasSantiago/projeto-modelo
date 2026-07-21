@@ -33,6 +33,8 @@ export const RATE_LIMITS = {
   register: { tokens: 5, window: '1 h' },
   /** Recuperação de senha: evita usar o app como bomba de e-mail. */
   passwordReset: { tokens: 4, window: '1 h' },
+  /** Reenvio de confirmação: mesma lógica de bomba de e-mail (SEC-16). */
+  emailVerification: { tokens: 4, window: '1 h' },
 } as const
 
 export type RateLimitBucket = keyof typeof RATE_LIMITS

@@ -94,6 +94,28 @@ export const passwordResetTokens = pgTable('passwordResetToken', {
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
 })
 
+// --- Verificação de e-mail (feature 002) --------------------------------
+
+/**
+ * Convites de confirmação de e-mail.
+ *
+ * Tabela própria, e não a `verificationToken` do Auth.js: aquela pertence ao
+ * adapter, que a limpa por conta própria. Acoplar nosso fluxo a um detalhe
+ * interno de biblioteca em beta sairia caro (plan.md, D3).
+ */
+export const emailVerificationTokens = pgTable('emailVerificationToken', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('userId')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  // Hash do token, nunca o valor cru (SEC-14).
+  tokenHash: text('tokenHash').notNull().unique(),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+})
+
 // --- Feature de referência: tasks ---------------------------------------
 export const tasks = pgTable('task', {
   id: text('id')
