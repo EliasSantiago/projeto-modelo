@@ -25,6 +25,11 @@ const serverEnvSchema = z.object({
 
   AUTH_EMAIL_SERVER: z.string().optional(),
   AUTH_EMAIL_FROM: z.string().optional(),
+
+  // Rate limiting distribuído (Upstash Redis). Sem estas variáveis o
+  // limitador cai para um contador em memória, adequado só a dev.
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 })
 
 const parsed = serverEnvSchema.safeParse(process.env)

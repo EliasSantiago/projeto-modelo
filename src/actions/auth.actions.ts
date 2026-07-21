@@ -15,6 +15,7 @@ import {
   registerSchema,
   resetPasswordSchema,
 } from '@/schemas/auth.schema'
+import { checkRateLimit, rateLimitMessage } from '@/lib/rate-limit'
 import { ROUTES } from '@/constants/routes'
 
 /** Estado padronizado dos formulários de auth (para `useActionState`). */
@@ -34,6 +35,10 @@ export async function loginAction(
 ): Promise<AuthFormState> {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
+
+  // Chave por IP + e-mail: um atacante num só IP não trava o login alheio.
+  const limit = await checkRateLimit('login', parsed.data.email)
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
 
   try {
     await signIn('credentials', {
@@ -57,6 +62,10 @@ export async function registerAction(
 ): Promise<AuthFormState> {
   const parsed = registerSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
+
+  // Só por IP: criação de contas em massa vem de um mesmo endereço.
+  const limit = await checkRateLimit('register')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
 
   try {
     await authService.register(parsed.data)
@@ -89,7 +98,23 @@ export async function requestPasswordResetAction(
   const parsed = forgotPasswordSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
 
-  await authService.requestPasswordReset(parsed.data.email)
+  // Só por IP, de propósito: incluir o e-mail na chave deixaria um atacante
+  // disparar N mensagens para cada endereço que ele conhecesse.
+  const limit = await checkRateLimit('passwordReset')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
+
+  try {
+    await authService.requestPasswordReset(parsed.data.email)
+  } catch (error) {
+    // Configuração ausente é falha nossa, não do usuário. A mensagem é a
+    // mesma para qualquer e-mail, então não revela quais contas existem.
+    console.error('[requestPasswordResetAction]', error)
+    return {
+      error:
+        'Serviço de e-mail indisponível no momento. Tente novamente mais tarde.',
+    }
+  }
+
   return {
     message:
       'Se houver uma conta com esse e-mail, enviamos um link de recuperação.',

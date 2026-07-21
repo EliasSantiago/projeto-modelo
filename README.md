@@ -96,8 +96,9 @@ pnpm install
 cp .env.example .env.local
 
 # 4. Aplique o schema no banco Neon
-pnpm db:generate   # gera o SQL a partir do schema Drizzle
-pnpm db:migrate    # aplica as migrações no banco
+# A migração inicial já vem versionada em `drizzle/`, então basta aplicá-la.
+# Rode `pnpm db:generate` apenas depois de ALTERAR `src/db/schema.ts`.
+pnpm db:migrate    # aplica as migrações versionadas no banco
 pnpm db:seed       # (opcional) popula com dados de exemplo
 
 # 5. Suba o servidor de desenvolvimento
@@ -202,6 +203,22 @@ Controles já implementados, rastreáveis em
 - Autorização por posse do recurso (`task.userId === session.user.id`).
 - Cookies de sessão `HttpOnly` / `Secure` / `SameSite`.
 - Erros nunca vazam detalhes sensíveis ao cliente.
+- **Rate limiting** em login, cadastro e recuperação de senha
+  (`lib/rate-limit.ts`), contra força bruta e bombardeio de e-mail.
+- **Security headers** em todas as rotas (`next.config.ts`): CSP,
+  HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`,
+  `Permissions-Policy`.
+- Anti-enumeração de usuários na recuperação de senha: a resposta é idêntica
+  exista ou não a conta, inclusive quando o envio falha.
+
+> ⚠️ **Antes de ir para produção**, leia os dois pontos em aberto:
+>
+> - A CSP usa `'unsafe-inline'` em `script-src`, exigido pelos scripts inline
+>   do Next. Ela barra recurso externo, **não** XSS inline. CSP por nonce
+>   exige gerar o nonce no `proxy.ts` e abre mão do PPR, a troca está
+>   comentada no `next.config.ts`.
+> - Sem `UPSTASH_REDIS_REST_*`, o rate limiting usa contador em memória e
+>   **não** é compartilhado entre instâncias serverless.
 
 ## 🧪 Testes
 

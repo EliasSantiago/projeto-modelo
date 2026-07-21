@@ -17,7 +17,9 @@ next-env.d.ts
 /test-results
 
 # drizzle
-/drizzle/meta
+# ATENÇÃO: /drizzle (incluindo /drizzle/meta) É versionado de propósito.
+# O journal em meta/ é o que permite ao drizzle-kit gerar migrations
+# incrementais corretas. Ignorá-lo quebra o histórico de schema.
 
 # env, nunca commitar secrets
 .env

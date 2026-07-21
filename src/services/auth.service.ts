@@ -3,7 +3,7 @@ import { randomBytes, createHash } from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import { userRepository } from '@/repositories/user.repository'
 import { passwordResetRepository } from '@/repositories/password-reset.repository'
-import { sendMail } from '@/lib/mailer'
+import { assertMailerConfigured, sendMail } from '@/lib/mailer'
 import { APP } from '@/constants/app'
 import { ROUTES } from '@/constants/routes'
 import type { User } from '@/db/schema'
@@ -66,6 +66,10 @@ export const authService = {
    * e-mail existe (evita enumeração de usuários, SEC).
    */
   async requestPasswordReset(email: string): Promise<void> {
+    // Antes do lookup, de propósito: um erro de configuração que só
+    // aparecesse para e-mails existentes revelaria quais contas existem.
+    assertMailerConfigured()
+
     const user = await userRepository.findByEmail(email)
     if (!user) return
 
@@ -78,11 +82,19 @@ export const authService = {
     )
 
     const link = `${APP.url}${ROUTES.resetPassword}?token=${token}`
-    await sendMail({
-      to: user.email,
-      subject: `${APP.name}, Recuperação de senha`,
-      text: `Para redefinir sua senha, acesse: ${link}\nO link expira em 30 minutos.`,
-    })
+
+    try {
+      await sendMail({
+        to: user.email,
+        subject: `${APP.name}, Recuperação de senha`,
+        text: `Para redefinir sua senha, acesse: ${link}\nO link expira em 30 minutos.`,
+      })
+    } catch (error) {
+      // Falha de entrega só ocorre quando a conta existe: propagá-la para a UI
+      // reabriria a enumeração. O operador vê no log; o usuário vê a mesma
+      // mensagem neutra de sempre e pode pedir um novo link.
+      console.error('[authService.requestPasswordReset] entrega falhou:', error)
+    }
   },
 
   /** Redefine a senha a partir de um token válido. */
