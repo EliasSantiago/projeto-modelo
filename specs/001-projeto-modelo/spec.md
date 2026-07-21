@@ -68,15 +68,21 @@ ponta-a-ponta.
 
 ## 8. Requisitos de Segurança (rastreáveis)
 
-| #      | Controle                                             | Verificação                                                                  |
-| ------ | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
-| SEC-01 | Secrets nunca no cliente; só `NEXT_PUBLIC_*` exposto | Env validado por schema separando server/client                              |
-| SEC-02 | DB só no servidor                                    | `import 'server-only'` na camada de db/repos                                 |
-| SEC-03 | Toda entrada validada com Zod                        | Actions rejeitam payload inválido antes de qualquer efeito                   |
-| SEC-04 | Autorização em Server Actions e rotas privadas       | Action confere sessão + posse do recurso (`task.userId === session.user.id`) |
-| SEC-05 | Queries parametrizadas                               | Uso exclusivo do query builder do Drizzle                                    |
-| SEC-06 | Cookies HttpOnly/Secure/SameSite                     | Config do Auth.js                                                            |
-| SEC-07 | Erros sem dados sensíveis                            | Mensagens genéricas ao cliente; log detalhado só no servidor                 |
+| #      | Controle                                             | Verificação                                                                   |
+| ------ | ---------------------------------------------------- | ----------------------------------------------------------------------------- |
+| SEC-01 | Secrets nunca no cliente; só `NEXT_PUBLIC_*` exposto | Env validado por schema separando server/client                               |
+| SEC-02 | DB só no servidor                                    | `import 'server-only'` na camada de db/repos                                  |
+| SEC-03 | Toda entrada validada com Zod                        | Actions rejeitam payload inválido antes de qualquer efeito                    |
+| SEC-04 | Autorização em Server Actions e rotas privadas       | Action confere sessão + posse do recurso (`task.userId === session.user.id`)  |
+| SEC-05 | Queries parametrizadas                               | Uso exclusivo do query builder do Drizzle                                     |
+| SEC-06 | Cookies HttpOnly/Secure/SameSite                     | Config do Auth.js                                                             |
+| SEC-07 | Erros sem dados sensíveis                            | Mensagens genéricas ao cliente; log detalhado só no servidor                  |
+| SEC-08 | Rate limiting em endpoints públicos de auth          | Login, cadastro e recuperação limitados por IP (`lib/rate-limit.ts`)          |
+| SEC-09 | Security headers em todas as rotas                   | CSP, HSTS, X-Frame-Options, nosniff, Referrer/Permissions-Policy              |
+| SEC-10 | Anti-enumeração de usuários                          | Recuperação responde igual exista ou não a conta, inclusive em falha de envio |
+| SEC-11 | Falha de e-mail nunca é silenciosa em produção       | Sem SMTP configurado, o fluxo lança em vez de descartar a mensagem            |
+| SEC-12 | Autorização por papel (RBAC)                         | `requireRole`/`adminAction`; papel vem do banco, nunca do cliente             |
+| SEC-13 | Log sem dado sensível                                | `lib/logger.ts` mascara senha, token e secret em qualquer profundidade        |
 
 ## 9. Critérios de Aceite Globais (Definition of Done)
 

@@ -1,0 +1,31 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    # Um PR por grupo em vez de um por pacote: revisar 30 bumps soltos por
+    # semana é como não revisar nenhum.
+    groups:
+      dependencias-de-producao:
+        dependency-type: production
+        update-types: [minor, patch]
+      ferramental-de-desenvolvimento:
+        dependency-type: development
+        update-types: [minor, patch]
+    # Major sobe sozinho, para ser lido com atenção: é onde mora o breaking
+    # change. Next e React quebram em conjunto, então vêm juntos.
+    ignore:
+      - dependency-name: 'next'
+        update-types: [version-update:semver-major]
+      - dependency-name: 'react'
+        update-types: [version-update:semver-major]
+      - dependency-name: 'react-dom'
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: monthly

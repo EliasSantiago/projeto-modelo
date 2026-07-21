@@ -15,7 +15,7 @@ const db = drizzle(neon(databaseUrl), { schema })
 async function main() {
   console.log('🌱 Semeando banco...')
 
-  // Usuário demo com senha "password123" (apenas para desenvolvimento).
+  // Usuários demo com senha "password123" (apenas para desenvolvimento).
   const passwordHash = await bcrypt.hash('password123', 12)
   const [user] = await db
     .insert(schema.users)
@@ -23,9 +23,21 @@ async function main() {
       name: 'Usuário Demo',
       email: 'demo@example.com',
       passwordHash,
+      role: 'user',
     })
     .onConflictDoNothing()
     .returning()
+
+  // Admin de exemplo, para exercitar `requireRole`/`adminAction` localmente.
+  await db
+    .insert(schema.users)
+    .values({
+      name: 'Admin Demo',
+      email: 'admin@example.com',
+      passwordHash,
+      role: 'admin',
+    })
+    .onConflictDoNothing()
 
   if (user) {
     await db.insert(schema.tasks).values([

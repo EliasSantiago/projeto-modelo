@@ -13,8 +13,11 @@ import {
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
+  resendVerificationSchema,
   resetPasswordSchema,
 } from '@/schemas/auth.schema'
+import { checkRateLimit, rateLimitMessage } from '@/lib/rate-limit'
+import { logger } from '@/lib/logger'
 import { ROUTES } from '@/constants/routes'
 
 /** Estado padronizado dos formulários de auth (para `useActionState`). */
@@ -34,6 +37,10 @@ export async function loginAction(
 ): Promise<AuthFormState> {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
+
+  // Chave por IP + e-mail: um atacante num só IP não trava o login alheio.
+  const limit = await checkRateLimit('login', parsed.data.email)
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
 
   try {
     await signIn('credentials', {
@@ -58,13 +65,17 @@ export async function registerAction(
   const parsed = registerSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
 
+  // Só por IP: criação de contas em massa vem de um mesmo endereço.
+  const limit = await checkRateLimit('register')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
+
   try {
     await authService.register(parsed.data)
   } catch (error) {
     if (error instanceof EmailInUseError) {
       return { fieldErrors: { email: ['E-mail já cadastrado'] } }
     }
-    console.error('[registerAction]', error)
+    logger.error('Falha ao criar conta', error)
     return { error: 'Não foi possível criar a conta' }
   }
 
@@ -89,7 +100,23 @@ export async function requestPasswordResetAction(
   const parsed = forgotPasswordSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
 
-  await authService.requestPasswordReset(parsed.data.email)
+  // Só por IP, de propósito: incluir o e-mail na chave deixaria um atacante
+  // disparar N mensagens para cada endereço que ele conhecesse.
+  const limit = await checkRateLimit('passwordReset')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
+
+  try {
+    await authService.requestPasswordReset(parsed.data.email)
+  } catch (error) {
+    // Configuração ausente é falha nossa, não do usuário. A mensagem é a
+    // mesma para qualquer e-mail, então não revela quais contas existem.
+    logger.error('Falha ao solicitar recuperação de senha', error)
+    return {
+      error:
+        'Serviço de e-mail indisponível no momento. Tente novamente mais tarde.',
+    }
+  }
+
   return {
     message:
       'Se houver uma conta com esse e-mail, enviamos um link de recuperação.',
@@ -110,10 +137,47 @@ export async function resetPasswordAction(
     if (error instanceof InvalidResetTokenError) {
       return { error: 'Token inválido ou expirado. Solicite um novo link.' }
     }
-    console.error('[resetPasswordAction]', error)
+    logger.error('Falha ao redefinir senha', error)
     return { error: 'Não foi possível redefinir a senha' }
   }
   redirect(`${ROUTES.login}?reset=success`)
+}
+
+/**
+ * Reenvia o link de confirmação de e-mail.
+ *
+ * A mensagem de sucesso é a mesma para endereço inexistente, já verificado ou
+ * recém-notificado: qualquer diferença transformaria este formulário num
+ * verificador de quem tem conta aqui (SEC-17).
+ */
+export async function resendVerificationAction(
+  _prev: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const parsed = resendVerificationSchema.safeParse(
+    Object.fromEntries(formData),
+  )
+  if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
+
+  // Só por IP: incluir o e-mail na chave deixaria um atacante disparar N
+  // mensagens para cada endereço que conhecesse (SEC-16).
+  const limit = await checkRateLimit('emailVerification')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
+
+  try {
+    await authService.resendVerificationEmail(parsed.data.email)
+  } catch (error) {
+    logger.error('Falha ao reenviar confirmação de e-mail', error)
+    return {
+      error:
+        'Serviço de e-mail indisponível no momento. Tente novamente mais tarde.',
+    }
+  }
+
+  return {
+    message:
+      'Se houver uma conta pendente com esse e-mail, enviamos um novo link.',
+  }
 }
 
 /** Inicia o fluxo OAuth de um provedor a partir de um <form>. */

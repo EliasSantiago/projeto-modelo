@@ -1,6 +1,7 @@
 import {
   boolean,
   integer,
+  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -16,6 +17,15 @@ import type { AdapterAccountType } from 'next-auth/adapters'
  */
 
 // --- Auth.js -------------------------------------------------------------
+
+/**
+ * Papéis de acesso. Fonte da verdade do RBAC: o enum vive no banco, o tipo
+ * TypeScript deriva dele. Para um novo papel, adicione aqui e gere a migração.
+ */
+export const userRoleEnum = pgEnum('user_role', ['user', 'admin'])
+export const USER_ROLES = userRoleEnum.enumValues
+export type UserRole = (typeof USER_ROLES)[number]
+
 export const users = pgTable('user', {
   id: text('id')
     .primaryKey()
@@ -26,6 +36,8 @@ export const users = pgTable('user', {
   image: text('image'),
   // Hash da senha (bcrypt). Nulo para contas criadas só via OAuth.
   passwordHash: text('passwordHash'),
+  // Papel de acesso. Default 'user': privilégio se concede, nunca se assume.
+  role: userRoleEnum('role').notNull().default('user'),
 })
 
 export const accounts = pgTable(
@@ -77,6 +89,28 @@ export const passwordResetTokens = pgTable('passwordResetToken', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   // Guardamos o hash do token, nunca o valor cru (SEC).
+  tokenHash: text('tokenHash').notNull().unique(),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+})
+
+// --- Verificação de e-mail (feature 002) --------------------------------
+
+/**
+ * Convites de confirmação de e-mail.
+ *
+ * Tabela própria, e não a `verificationToken` do Auth.js: aquela pertence ao
+ * adapter, que a limpa por conta própria. Acoplar nosso fluxo a um detalhe
+ * interno de biblioteca em beta sairia caro (plan.md, D3).
+ */
+export const emailVerificationTokens = pgTable('emailVerificationToken', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('userId')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  // Hash do token, nunca o valor cru (SEC-14).
   tokenHash: text('tokenHash').notNull().unique(),
   expires: timestamp('expires', { mode: 'date' }).notNull(),
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),

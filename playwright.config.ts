@@ -7,16 +7,19 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  reporter: 'html',
+  // No CI o relatório HTML não é aberto por ninguém; a lista no log serve.
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'html',
   use: {
     baseURL,
     trace: 'on-first-retry',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'pnpm dev',
+    // No CI roda contra o build de produção: é o artefato que vai ao ar, e
+    // evita a flakiness da compilação sob demanda do `dev`.
+    command: process.env.CI ? 'pnpm build && pnpm start' : 'pnpm dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
   },
 })

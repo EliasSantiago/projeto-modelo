@@ -23,14 +23,30 @@ const serverEnvSchema = z.object({
   AUTH_GITHUB_ID: z.string().optional(),
   AUTH_GITHUB_SECRET: z.string().optional(),
 
+  // --- E-mail ------------------------------------------------------------
+  // Provedor explícito. Ausente, `lib/mail` detecta pelo que estiver
+  // configurado: resend → smtp → console.
+  MAIL_PROVIDER: z.enum(['resend', 'smtp', 'console']).optional(),
+  // Remetente, ex.: "Projeto Modelo <no-reply@seudominio.com>".
+  MAIL_FROM: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
+
+  // SMTP (alternativa ao Resend). `AUTH_EMAIL_FROM` é o nome legado de
+  // `MAIL_FROM`, mantido para não quebrar quem já tinha o .env preenchido.
   AUTH_EMAIL_SERVER: z.string().optional(),
   AUTH_EMAIL_FROM: z.string().optional(),
+
+  // Rate limiting distribuído (Upstash Redis). Sem estas variáveis o
+  // limitador cai para um contador em memória, adequado só a dev.
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 })
 
 const parsed = serverEnvSchema.safeParse(process.env)
 
 if (!parsed.success) {
-  // Log detalhado só no servidor; nunca exposto ao cliente (SEC-07).
+  // `console` de propósito: o logger depende deste módulo, então ainda não
+  // existe neste ponto. Detalhe fica só no servidor (SEC-07).
   console.error(
     '❌ Variáveis de ambiente do servidor inválidas:',
     z.flattenError(parsed.error).fieldErrors,

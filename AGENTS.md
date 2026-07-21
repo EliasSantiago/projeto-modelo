@@ -14,7 +14,13 @@ constitution → spec → plan → tasks → implementação
 4. **Tasks** (`tasks.md`), passos rastreáveis, ordenados por dependência.
 5. **Implementação**, só depois dos 4 acima.
 
-Para uma nova feature, copie a pasta `specs/001-projeto-modelo` como modelo.
+Para uma nova feature, rode `/nova-feature <nome-em-kebab-case>`: ele numera a
+pasta, copia `specs/_template/` e conduz a spec. Manualmente, copie
+`specs/_template/` para `specs/<NNN>-<nome>/`. Use `specs/001-projeto-modelo`
+como exemplo preenchido.
+
+Cada etapa depende do "ok" do usuário na anterior. Pular etapa é o erro que
+este fluxo existe para evitar.
 
 ## Regras de arquitetura (Princípio IV da constituição)
 

@@ -30,4 +30,15 @@ export const userRepository = {
   ): Promise<void> {
     await db.update(users).set({ passwordHash }).where(eq(users.id, userId))
   },
+
+  /** Marca o endereço como confirmado. Idempotente: reconfirmar não quebra. */
+  async markEmailVerified(
+    userId: string,
+    at: Date = new Date(),
+  ): Promise<void> {
+    await db
+      .update(users)
+      .set({ emailVerified: at })
+      .where(eq(users.id, userId))
+  },
 }

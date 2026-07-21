@@ -40,7 +40,8 @@ Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
 | **Formulários** | [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) (validação única no cliente e no servidor)                                                     |
 | **ORM**         | [Drizzle ORM](https://orm.drizzle.team)                                                                                                                                |
 | **Banco**       | [Neon Postgres](https://neon.tech) (serverless)                                                                                                                        |
-| **Auth**        | [Auth.js v5](https://authjs.dev), e-mail/senha (criar conta, login, recuperação) + OAuth Google/GitHub                                                                 |
+| **Auth**        | [Auth.js v5](https://authjs.dev), e-mail/senha (criar conta, login, recuperação, confirmação de e-mail) + OAuth Google/GitHub + papéis (RBAC)                          |
+| **E-mail**      | [Resend](https://resend.com) (padrão) · SMTP via [Nodemailer](https://nodemailer.com) · provedor trocável por variável de ambiente                                     |
 | **Estado**      | [Zustand](https://zustand-demo.pmnd.rs) (quando necessário)                                                                                                            |
 | **Testes**      | [Vitest](https://vitest.dev) + [Testing Library](https://testing-library.com) · [Playwright](https://playwright.dev)                                                   |
 | **Qualidade**   | [ESLint](https://eslint.org) · [Prettier](https://prettier.io) · [Husky](https://typicode.github.io/husky) · [lint-staged](https://github.com/lint-staged/lint-staged) |
@@ -80,7 +81,8 @@ Detalhes e justificativas: [`specs/001-projeto-modelo/plan.md`](./specs/001-proj
 - **pnpm 10+**, instale com `npm install -g pnpm`
 - Uma conta e um banco no **[Neon](https://neon.tech)** (gratuito para começar)
 - (Opcional) Credenciais OAuth do **Google** e/ou **GitHub**
-- (Opcional) Um servidor **SMTP** para e-mail de recuperação de senha
+- (Opcional) Uma chave da **[Resend](https://resend.com)** ou um servidor
+  **SMTP** para os e-mails de recuperação de senha e confirmação
 
 ## 🚀 Como rodar o projeto
 
@@ -96,8 +98,9 @@ pnpm install
 cp .env.example .env.local
 
 # 4. Aplique o schema no banco Neon
-pnpm db:generate   # gera o SQL a partir do schema Drizzle
-pnpm db:migrate    # aplica as migrações no banco
+# A migração inicial já vem versionada em `drizzle/`, então basta aplicá-la.
+# Rode `pnpm db:generate` apenas depois de ALTERAR `src/db/schema.ts`.
+pnpm db:migrate    # aplica as migrações versionadas no banco
 pnpm db:seed       # (opcional) popula com dados de exemplo
 
 # 5. Suba o servidor de desenvolvimento
@@ -106,8 +109,9 @@ pnpm dev
 
 Acesse **http://localhost:3000**. 🎉
 
-> 💡 Não tem OAuth/SMTP ainda? O projeto sobe mesmo assim: a tela de login
-> mostra apenas os provedores que estiverem configurados no `.env.local`.
+> 💡 Não tem OAuth nem provedor de e-mail ainda? O projeto sobe mesmo assim:
+> a tela de login mostra só os provedores configurados, e os e-mails são
+> impressos no console do servidor, de onde você copia o link.
 
 ### Páginas de autenticação
 
@@ -117,10 +121,12 @@ O starter já inclui o fluxo completo com design split-screen:
 - `/login`, login por e-mail/senha + OAuth
 - `/forgot-password`, solicitar link de recuperação
 - `/reset-password?token=...`, definir nova senha
+- `/verify-email?token=...`, confirmar e-mail (e pedir novo link)
 - `/dashboard`, área privada com métricas e a feature `tasks`
 
 Após rodar `pnpm db:seed`, use as credenciais de demonstração:
-**`demo@example.com`** / **`password123`**.
+**`demo@example.com`** / **`password123`** (papel `user`) ou
+**`admin@example.com`** / **`password123`** (papel `admin`, acessa `/admin`).
 
 ## 🔧 Como configurar o `.env`
 
@@ -202,13 +208,46 @@ Controles já implementados, rastreáveis em
 - Autorização por posse do recurso (`task.userId === session.user.id`).
 - Cookies de sessão `HttpOnly` / `Secure` / `SameSite`.
 - Erros nunca vazam detalhes sensíveis ao cliente.
+- **Rate limiting** em login, cadastro e recuperação de senha
+  (`lib/rate-limit.ts`), contra força bruta e bombardeio de e-mail.
+- **Security headers** em todas as rotas (`next.config.ts`): CSP,
+  HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`,
+  `Permissions-Policy`.
+- Anti-enumeração de usuários na recuperação de senha: a resposta é idêntica
+  exista ou não a conta, inclusive quando o envio falha.
+- **RBAC**: papéis `user`/`admin` no banco, `requireRole`/`requireAdmin`
+  (`lib/session.ts`) e `adminAction` (`lib/safe-action.ts`). `/admin` é a
+  rota protegida de referência.
+- **Log estruturado** (`lib/logger.ts`) mascarando senha, token e secret,
+  com gancho para Sentry (veja o exemplo no fim do arquivo).
+- **Confirmação de e-mail** com token de uso único (hash em repouso, 24h de
+  validade) e reenvio limitado por IP. Conta criada por provedor social já
+  nasce verificada.
+
+> ⚠️ **Antes de ir para produção**, leia os dois pontos em aberto:
+>
+> - A CSP usa `'unsafe-inline'` em `script-src`, exigido pelos scripts inline
+>   do Next. Ela barra recurso externo, **não** XSS inline. CSP por nonce
+>   exige gerar o nonce no `proxy.ts` e abre mão do PPR, a troca está
+>   comentada no `next.config.ts`.
+> - Sem `UPSTASH_REDIS_REST_*`, o rate limiting usa contador em memória e
+>   **não** é compartilhado entre instâncias serverless.
+> - Conta não verificada **continua podendo entrar**: a confirmação é
+>   registrada, não imposta. Para exigir e-mail confirmado numa rota, use
+>   `requireVerifiedUser()` (`lib/session.ts`). A política é sua.
+>
+> A lista completa de limitações conhecidas está em
+> [`SECURITY.md`](./SECURITY.md).
 
 ## 🧪 Testes
 
 ```bash
 pnpm test        # schemas, services (repo mockado), utils, componentes
-pnpm test:e2e    # fluxo de login/gate de rota (Playwright)
+pnpm test:e2e    # gate de rota e sessão forjada (Playwright)
 ```
+
+O CI roda os dois em jobs separados, mais `pnpm audit`. O E2E sobe o **build
+de produção**, não o dev server: é o artefato que vai ao ar.
 
 ## ☁️ Deploy (Vercel + Neon)
 
@@ -233,7 +272,23 @@ Este projeto foi construído seguindo SDD. Os artefatos:
 - [`specs/001-projeto-modelo/tasks.md`](./specs/001-projeto-modelo/tasks.md), tarefas rastreáveis
 
 Para uma nova feature, siga a mesma ordem: **constitution → spec → plan →
-tasks → implementação**. Veja [`AGENTS.md`](./AGENTS.md).
+tasks → implementação**.
+
+```bash
+# Com Claude Code: numera a pasta, copia o template e conduz a spec
+/nova-feature relatorios-de-vendas
+
+# Manualmente
+cp -r specs/_template specs/002-relatorios-de-vendas
+```
+
+- [`specs/_template/`](./specs/_template), esqueleto comentado dos três
+  documentos, com as regras de cada etapa embutidas
+- [`.claude/commands/nova-feature.md`](./.claude/commands/nova-feature.md),
+  o slash command
+
+Cada etapa depende do "ok" na anterior. Detalhes em
+[`AGENTS.md`](./AGENTS.md) e [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## 👤 Autor
 
