@@ -1,6 +1,7 @@
 import 'server-only'
 import { z } from 'zod'
-import { getCurrentUser, type SessionUser } from '@/lib/session'
+import { getCurrentUser, hasRole, type SessionUser } from '@/lib/session'
+import type { UserRole } from '@/db/schema'
 
 /**
  * Resultado padronizado das Server Actions consumido pela UI.
@@ -24,10 +25,18 @@ type AuthedHandler<TInput, TOutput> = (
 export function authAction<TSchema extends z.ZodType, TOutput>(
   schema: TSchema,
   handler: AuthedHandler<z.infer<TSchema>, TOutput>,
+  options: { role?: UserRole } = {},
 ) {
   return async (input: z.infer<TSchema>): Promise<ActionResult<TOutput>> => {
     const user = await getCurrentUser()
     if (!user) {
+      return { ok: false, error: 'Não autorizado' }
+    }
+
+    // Mesma mensagem de "não autorizado" para papel insuficiente: distinguir
+    // os dois casos confirmaria a um usuário comum que a action existe e o
+    // que ela exige.
+    if (options.role && !hasRole(user, options.role)) {
       return { ok: false, error: 'Não autorizado' }
     }
 
@@ -56,4 +65,17 @@ export function authAction<TSchema extends z.ZodType, TOutput>(
       return { ok: false, error: message }
     }
   }
+}
+
+/**
+ * Server Action restrita a administradores. Açúcar sobre `authAction` para
+ * que a intenção fique legível no ponto de uso:
+ *
+ *   export const banUserAction = adminAction(banUserSchema, async (input) => …)
+ */
+export function adminAction<TSchema extends z.ZodType, TOutput>(
+  schema: TSchema,
+  handler: AuthedHandler<z.infer<TSchema>, TOutput>,
+) {
+  return authAction(schema, handler, { role: 'admin' })
 }

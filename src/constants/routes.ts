@@ -11,14 +11,20 @@ export const ROUTES = {
   marketplace: '/dashboard/marketplace',
   profile: '/dashboard/profile',
   settings: '/settings',
+  admin: '/admin',
 } as const
 
 /**
  * Prefixos de rota que exigem autenticação (usados pelo proxy.ts).
- * As páginas de exemplo (`/dashboard/*`) são públicas para servir de
- * documentação. Para proteger uma rota real, adicione o prefixo aqui, ex.:
- *   export const PROTECTED_PREFIXES = ['/app'] as const
+ *
+ * As páginas de exemplo (`/dashboard/*`) são PÚBLICAS de propósito: servem de
+ * documentação viva do layout. `/admin` é a área realmente protegida, e
+ * demonstra as duas camadas: o proxy corta o anônimo cedo e `requireAdmin`
+ * faz o enforcement de verdade na página.
+ *
+ * Para proteger uma rota nova, adicione o prefixo aqui E chame
+ * `requireUser`/`requireRole` na página, nunca só uma das duas.
  */
-export const PROTECTED_PREFIXES = [] as const
+export const PROTECTED_PREFIXES = ['/admin'] as const
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES]

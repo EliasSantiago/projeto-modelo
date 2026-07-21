@@ -59,6 +59,12 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: false },
   // Não anunciar o framework reduz alvo fácil de fingerprinting.
   poweredByHeader: false,
+  experimental: {
+    // Habilita `forbidden()`/`unauthorized()` do next/navigation, usados por
+    // `requireRole` para responder 403 de verdade em vez de redirecionar.
+    // É flag experimental (first-party): revisar ao subir de major do Next.
+    authInterrupts: true,
+  },
   images: {
     remotePatterns: [
       // Avatares dos provedores OAuth usados na sessão.

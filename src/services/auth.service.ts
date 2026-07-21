@@ -6,7 +6,7 @@ import { passwordResetRepository } from '@/repositories/password-reset.repositor
 import { assertMailerConfigured, sendMail } from '@/lib/mailer'
 import { APP } from '@/constants/app'
 import { ROUTES } from '@/constants/routes'
-import type { User } from '@/db/schema'
+import type { User, UserRole } from '@/db/schema'
 
 export class EmailInUseError extends Error {
   constructor() {
@@ -48,7 +48,7 @@ export const authService = {
   async verifyCredentials(
     email: string,
     password: string,
-  ): Promise<Pick<User, 'id' | 'name' | 'email' | 'image'> | null> {
+  ): Promise<Pick<User, 'id' | 'name' | 'email' | 'image' | 'role'> | null> {
     const user = await userRepository.findByEmail(email)
     if (!user?.passwordHash) return null
     const ok = await bcrypt.compare(password, user.passwordHash)
@@ -58,7 +58,17 @@ export const authService = {
       name: user.name,
       email: user.email,
       image: user.image,
+      role: user.role,
     }
+  },
+
+  /**
+   * Papel efetivo do usuário, lido do banco. O papel NUNCA vem do cliente;
+   * quem chama passa apenas o id vindo da sessão já autenticada.
+   */
+  async findRole(userId: string): Promise<UserRole> {
+    const user = await userRepository.findById(userId)
+    return user?.role ?? 'user'
   },
 
   /**

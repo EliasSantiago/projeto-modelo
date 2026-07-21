@@ -4,7 +4,13 @@ import Credentials from 'next-auth/providers/credentials'
 import GitHub from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
 import { db } from '@/db/client'
-import { accounts, sessions, users, verificationTokens } from '@/db/schema'
+import {
+  accounts,
+  sessions,
+  users,
+  verificationTokens,
+  type UserRole,
+} from '@/db/schema'
 import { authService } from '@/services/auth.service'
 import { loginSchema } from '@/schemas/auth.schema'
 import { serverEnv } from '@/lib/env.server'
@@ -78,14 +84,29 @@ export const authConfig = {
     },
   },
   callbacks: {
-    // Persiste o id do usuário no token e o expõe na sessão (SEC-04).
-    jwt({ token, user }) {
-      if (user?.id) token.id = user.id
+    /**
+     * Persiste id e papel no token (SEC-04, SEC-12).
+     *
+     * O bloco só roda quando `user` existe, ou seja, no sign-in: consultar o
+     * banco a cada request encareceria toda navegação. A contrapartida é que
+     * mudar o papel de alguém só reflete no próximo login — para revogação
+     * imediata, troque por uma leitura em cada request ou invalide a sessão.
+     */
+    async jwt({ token, user }) {
+      if (user?.id) {
+        token.id = user.id
+        // OAuth via adapter já traz o papel na linha do usuário; o fallback
+        // cobre o provider Credentials e contas recém-criadas.
+        token.role =
+          (user as { role?: UserRole }).role ??
+          (await authService.findRole(user.id))
+      }
       return token
     },
     session({ session, token }) {
       if (session.user && typeof token.id === 'string') {
         session.user.id = token.id
+        session.user.role = (token.role as UserRole | undefined) ?? 'user'
       }
       return session
     },
