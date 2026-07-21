@@ -19,6 +19,7 @@ Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
 - [Como configurar o `.env`](#-como-configurar-o-env)
 - [Scripts](#-scripts)
 - [Segurança](#-segurança-owasp-top-10)
+- [Cache](#-cache)
 - [Testes](#-testes)
 - [Deploy](#️-deploy-vercel--neon)
 - [Spec-Driven Development](#-spec-driven-development)
@@ -239,6 +240,46 @@ Controles já implementados, rastreáveis em
 > A lista completa de limitações conhecidas está em
 > [`SECURITY.md`](./SECURITY.md).
 
+## ⚡ Cache
+
+O projeto roda com **Cache Components (PPR)** do Next.js 16 sobre a
+infraestrutura da Vercel. Convenções centralizadas em
+[`src/lib/cache.ts`](./src/lib/cache.ts); guia completo em
+[`docs/caching.md`](./docs/caching.md).
+
+Três diretivas, três destinos:
+
+| Diretiva               | Onde vive            | Use para                        |
+| ---------------------- | -------------------- | ------------------------------- |
+| `'use cache'`          | Memória da instância | Conteúdo do shell estático      |
+| `'use cache: remote'`  | Runtime Cache Vercel | Dado **compartilhado** e caro   |
+| `'use cache: private'` | Memória do browser   | Dado por-usuário (experimental) |
+
+Pontos que valem saber antes de cachear qualquer coisa:
+
+- **A maior parte deste projeto já é estática** (`/`, `/docs`, widgets do
+  dashboard): código síncrono é prerenderizado no build e servido pelo CDN.
+  Adicionar cache aí só piora.
+- **Nunca coloque dado por-usuário em `'use cache: remote'`.** O Runtime Cache
+  é compartilhado entre todos os visitantes: seria uma entrada por usuário
+  (taxa de acerto perto de zero) e um erro de chave vira vazamento entre
+  contas. Cacheie pela dimensão de poucos valores distintos.
+- **A lista de tarefas não é cacheada de propósito** — dado por-usuário,
+  mutável a cada ação e já resolvido por uma query indexada.
+- **Prefira `updateTag`/`revalidateTag` a `revalidatePath`**: o path derruba a
+  rota inteira, inclusive o shell estático que não mudou.
+
+Perfis nomeados por intenção (`CACHE_PROFILES`), ajustáveis num lugar só:
+
+| Perfil        | `revalidate` | Para                             |
+| ------------- | ------------ | -------------------------------- |
+| `chrome`      | 1 dia        | Rodapé, navegação, institucional |
+| `sharedData`  | 5 min        | Dado compartilhado do banco      |
+| `externalApi` | 1 hora       | Upstream com rate limit          |
+
+O `pnpm build` imprime `Revalidate`/`Expire` por rota — é como se confere se um
+perfil pegou.
+
 ## 🧪 Testes
 
 ```bash
@@ -257,7 +298,8 @@ de produção**, não o dev server: é o artefato que vai ao ar.
    Localmente você pode sincronizar com `vercel env pull .env.local`.
 4. Aplique as migrações contra o banco de produção:
    `pnpm db:migrate` (com `DATABASE_URL` de produção).
-5. Faça o deploy. O `next build` roda com Cache Components (PPR) habilitado.
+5. Faça o deploy. O `next build` roda com Cache Components (PPR) habilitado —
+   ver [Cache](#-cache) para o que isso implica no Runtime Cache da Vercel.
 
 > Configure os callbacks de OAuth para o domínio de produção:
 > `https://SEU-DOMINIO/api/auth/callback/{google|github}`.

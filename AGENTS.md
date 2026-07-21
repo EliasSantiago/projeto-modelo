@@ -40,6 +40,19 @@ app / components → features / hooks → actions → services → repositories 
 - Dado de request (cookies/headers/`auth()`) que não é cacheado precisa estar
   dentro de `<Suspense>` (Cache Components / PPR).
 
+## Cache (`lib/cache.ts`, guia em `docs/caching.md`)
+
+- Código síncrono **já é estático** (prerenderizado no CDN). Não cacheie o que
+  já é estático: só adiciona indireção.
+- **Nunca** ponha dado por-usuário em `'use cache: remote'`. O Runtime Cache da
+  Vercel é compartilhado entre visitantes: uma entrada por usuário derruba a
+  taxa de acerto e um erro de chave vaza dado entre contas. Cacheie pela
+  dimensão de poucos valores distintos (idioma, categoria), nunca pelo `userId`.
+- Perfis de tempo em `CACHE_PROFILES` e tags em `cacheTags`, nunca literais
+  espalhados: tag com typo não quebra o build, só deixa de invalidar.
+- Invalide por tag (`updateTag` em Server Action) e não por `revalidatePath`,
+  que derruba a rota inteira, inclusive o shell estático.
+
 ## Segurança (Princípio III, sempre)
 
 - Só `NEXT_PUBLIC_*` no cliente. Secrets via `lib/env.server.ts` (`server-only`).
