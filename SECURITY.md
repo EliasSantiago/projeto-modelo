@@ -39,6 +39,26 @@ autorização, vazamento de secret, injeção, falha nos controles listados em
 - Ausência de rate limiting distribuído quando `UPSTASH_REDIS_REST_*` não foi
   configurado — é comportamento documentado, não defeito.
 
+## Advisories de dependência
+
+O job `auditoria de dependências` do CI roda `pnpm audit --audit-level high`:
+falha em **alta e crítica**, ignora o resto. Severidade baixa ou moderada em
+devDependency travaria o merge sem reduzir risco real de quem roda isso em
+produção.
+
+Advisory em dependência **direta** se resolve subindo a versão no
+`package.json`. Em dependência **transitiva**, onde não se controla o
+`package.json` de quem a puxa, use `pnpm.overrides`.
+
+Duas regras para os overrides, porque é fácil trocar um problema por outro:
+
+1. **Fixe a menor versão corrigida DENTRO do mesmo major.** Um override para
+   `js-yaml@^5` conserta o advisory e quebra todo pacote escrito para a API
+   da 4.x — e o erro aparece em runtime, não no build.
+2. **Remova o override quando quem puxa a dependência subir sozinho.** Override
+   esquecido é pin invisível: segura a árvore inteira numa versão antiga e
+   ninguém lembra por quê.
+
 ## Limitações conhecidas
 
 Estão documentadas de propósito, não são descuido:
