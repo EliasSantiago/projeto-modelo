@@ -13,7 +13,9 @@ export default function PublicLayout({
       <Suspense fallback={<HeaderSkeleton />}>
         <Header />
       </Suspense>
-      <main className="flex-1">{children}</main>
+      <main id="conteudo" className="flex-1">
+        {children}
+      </main>
       <Footer />
     </div>
   )

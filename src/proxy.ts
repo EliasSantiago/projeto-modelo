@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { PROTECTED_PREFIXES, ROUTES } from '@/constants/routes'
+import { SESSION_COOKIE_NAMES } from '@/constants/auth'
 
 /**
  * Proxy (Next.js 16, substitui o middleware.ts).
@@ -8,11 +9,6 @@ import { PROTECTED_PREFIXES, ROUTES } from '@/constants/routes'
  * cada Server Action (defesa em profundidade), este proxy não confia no
  * conteúdo do cookie, apenas evita render desnecessário para deslogados.
  */
-const SESSION_COOKIES = [
-  'authjs.session-token',
-  '__Secure-authjs.session-token',
-]
-
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -21,7 +17,9 @@ export function proxy(request: NextRequest) {
   )
   if (!isProtected) return NextResponse.next()
 
-  const hasSession = SESSION_COOKIES.some((name) => request.cookies.has(name))
+  const hasSession = SESSION_COOKIE_NAMES.some((name) =>
+    request.cookies.has(name),
+  )
   if (hasSession) return NextResponse.next()
 
   const loginUrl = new URL(ROUTES.login, request.url)
@@ -30,6 +28,13 @@ export function proxy(request: NextRequest) {
 }
 
 export const proxyConfig = {
-  // Ignora assets estáticos e a própria API de auth.
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth).*)'],
+  /**
+   * Só o que pode virar uma rota protegida. Ficam de fora os assets, a API do
+   * Auth.js (que precisa responder a deslogado, é ela que faz o login) e os
+   * arquivos de metadado gerados pelo Next. Rodar o proxy neles seria custo
+   * por requisição sem nenhum gate para aplicar.
+   */
+  matcher: [
+    '/((?!_next/static|_next/image|api/auth|favicon.ico|icon.svg|manifest.webmanifest|robots.txt|sitemap.xml|.well-known).*)',
+  ],
 }

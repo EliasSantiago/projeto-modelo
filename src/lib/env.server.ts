@@ -18,6 +18,15 @@ const serverEnvSchema = z.object({
     .min(1, 'AUTH_SECRET é obrigatório (gere com `npx auth secret`)'),
   AUTH_URL: z.string().url().optional(),
 
+  // Sinais de que o Auth.js pode confiar no header `Host` da requisição.
+  // Ele recusa (`UntrustedHost`) quando roda em produção sem nenhum deles,
+  // porque derivar a URL de callback de um header que o cliente controla é
+  // como um atacante redireciona o fluxo de OAuth para o domínio dele.
+  // `VERCEL` e `CF_PAGES` são injetadas pelas próprias plataformas.
+  AUTH_TRUST_HOST: z.string().optional(),
+  VERCEL: z.string().optional(),
+  CF_PAGES: z.string().optional(),
+
   AUTH_GOOGLE_ID: z.string().optional(),
   AUTH_GOOGLE_SECRET: z.string().optional(),
   AUTH_GITHUB_ID: z.string().optional(),
@@ -55,3 +64,21 @@ if (!parsed.success) {
 }
 
 export const serverEnv = parsed.data
+
+/**
+ * `true` quando o Auth.js vai aceitar o header `Host` neste ambiente.
+ *
+ * Reproduz a regra do `@auth/core`: fora de produção ele confia por padrão;
+ * em produção exige `AUTH_URL`, `AUTH_TRUST_HOST` ou uma plataforma
+ * conhecida. Sem isso, toda chamada a `auth()` estoura com `UntrustedHost` —
+ * um erro que aparece só depois do deploy e cuja causa não é óbvia.
+ * `instrumentation.ts` avisa no boot; ver `.env.example`.
+ */
+export const authHostIsTrusted =
+  serverEnv.NODE_ENV !== 'production' ||
+  Boolean(
+    serverEnv.AUTH_URL ??
+    serverEnv.AUTH_TRUST_HOST ??
+    serverEnv.VERCEL ??
+    serverEnv.CF_PAGES,
+  )

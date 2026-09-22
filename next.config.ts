@@ -28,6 +28,9 @@ const csp = [
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `object-src 'none'`,
+  // A app não embute iframe nenhum; se um dia embutir, libere o host aqui e
+  // não com um curinga.
+  `frame-src 'none'`,
   ...(isDev ? [] : ['upgrade-insecure-requests']),
 ].join('; ')
 
@@ -41,6 +44,12 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
   },
+  // Isola o contexto de navegação: uma aba aberta por (ou que abriu) esta
+  // app não consegue mexer na nossa `window`. Fecha XS-Leaks e tabnabbing,
+  // que `frame-ancestors` não cobre por tratarem só de iframe.
+  // Auth.js usa redirect de página inteira no OAuth, não popup, então o
+  // login continua funcionando com `same-origin` (SEC-22).
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
   // HSTS só faz sentido sob HTTPS; em dev (http://localhost) atrapalha.
   ...(isDev
     ? []

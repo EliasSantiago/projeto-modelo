@@ -20,6 +20,28 @@ export default defineConfig({
     },
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', '.next', 'tests/e2e'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      /**
+       * Cobertura medida sobre a lógica que o Princípio V manda testar:
+       * schemas, services, repositories, utils e o que vive em `lib`.
+       *
+       * `app/` e `components/` ficam de fora de propósito. Página e
+       * componente de apresentação são cobertos por E2E, não por unitário;
+       * mantê-los na conta produziria um número grande e sem significado, do
+       * tipo que faz alguém escrever teste de render só para mover a métrica.
+       */
+      include: [
+        'src/actions/**',
+        'src/lib/**',
+        'src/repositories/**',
+        'src/schemas/**',
+        'src/services/**',
+        'src/utils/**',
+      ],
+      exclude: ['**/*.test.{ts,tsx}', 'src/lib/env.*.ts'],
+    },
   },
   resolve: {
     alias: {

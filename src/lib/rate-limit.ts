@@ -35,6 +35,15 @@ export const RATE_LIMITS = {
   passwordReset: { tokens: 4, window: '1 h' },
   /** Reenvio de confirmação: mesma lógica de bomba de e-mail (SEC-16). */
   emailVerification: { tokens: 4, window: '1 h' },
+  /**
+   * Consumo de token de uso único (link de redefinição de senha).
+   *
+   * O token tem 256 bits, então adivinhá-lo por força bruta não é o risco
+   * real: o limite existe para que um script não use o endpoint como sonda
+   * barata e para cortar o custo de CPU do bcrypt que cada tentativa válida
+   * dispara (SEC-21). Folgado o bastante para quem errou a confirmação.
+   */
+  tokenSubmit: { tokens: 10, window: '1 h' },
 } as const
 
 export type RateLimitBucket = keyof typeof RATE_LIMITS

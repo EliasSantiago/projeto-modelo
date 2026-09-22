@@ -39,6 +39,35 @@ const VERIFICATION_TOKEN_TTL_MS = 1000 * 60 * 60 * 24
 const hashToken = (token: string) =>
   createHash('sha256').update(token).digest('hex')
 
+/**
+ * Hash descartável (custo 12, mesma configuração das senhas reais), usado só
+ * para gastar CPU quando o e-mail não existe.
+ *
+ * Sem ele, "conta inexistente" responde em microssegundos e "senha errada"
+ * em ~100 ms de bcrypt: a diferença é medível de fora e transforma o login
+ * num oráculo de quem tem cadastro aqui — a mesma enumeração que o fluxo de
+ * recuperação de senha já evita (SEC-20, OWASP A07/A01).
+ */
+const DUMMY_PASSWORD_HASH =
+  '$2b$12$AW2WVs5z8Uaz3.aMHUyM..l82OOK5tEJNv9/pVedCkx.hbGgkpSGy'
+
+/**
+ * `true` para violação de unicidade do Postgres (SQLSTATE 23505).
+ *
+ * O lookup prévio de e-mail não é atômico: dois cadastros simultâneos com o
+ * mesmo endereço passam os dois pela checagem e o segundo estoura no INSERT.
+ * A constraint `unique` do banco é quem realmente garante a regra; aqui só
+ * traduzimos o erro dela para o mesmo resultado do caminho comum (SEC-25).
+ */
+function isUniqueViolation(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: unknown }).code === '23505'
+  )
+}
+
 export const authService = {
   /** Cria uma conta com senha (hash bcrypt). */
   async register(input: {
@@ -50,11 +79,20 @@ export const authService = {
     if (existing) throw new EmailInUseError()
 
     const passwordHash = await bcrypt.hash(input.password, 12)
-    const user = await userRepository.create({
-      name: input.name,
-      email: input.email,
-      passwordHash,
-    })
+
+    let user: User
+    try {
+      user = await userRepository.create({
+        name: input.name,
+        email: input.email,
+        passwordHash,
+      })
+    } catch (error) {
+      // Corrida com outro cadastro do mesmo e-mail: a constraint do banco
+      // venceu. Para quem chamou, é o mesmo caso de "e-mail já cadastrado".
+      if (isUniqueViolation(error)) throw new EmailInUseError()
+      throw error
+    }
 
     // Envio best-effort: provedor de e-mail fora do ar não pode custar a
     // conta recém-criada. A pessoa pede outro link depois (SEC-19).
@@ -141,9 +179,16 @@ export const authService = {
     'id' | 'name' | 'email' | 'image' | 'role' | 'emailVerified'
   > | null> {
     const user = await userRepository.findByEmail(email)
-    if (!user?.passwordHash) return null
-    const ok = await bcrypt.compare(password, user.passwordHash)
-    if (!ok) return null
+
+    // O compare roda SEMPRE, inclusive sem usuário ou sem senha cadastrada
+    // (conta só-OAuth). É o custo de bcrypt que iguala o tempo de resposta
+    // dos três casos; devolver cedo aqui reabriria o oráculo de enumeração.
+    const ok = await bcrypt.compare(
+      password,
+      user?.passwordHash ?? DUMMY_PASSWORD_HASH,
+    )
+    if (!ok || !user?.passwordHash) return null
+
     return {
       id: user.id,
       name: user.name,

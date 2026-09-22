@@ -15,6 +15,7 @@ import { authService } from '@/services/auth.service'
 import { loginSchema } from '@/schemas/auth.schema'
 import { serverEnv } from '@/lib/env.server'
 import { ROUTES } from '@/constants/routes'
+import { sessionCookieName } from '@/constants/auth'
 
 /**
  * Auth.js v5. Login por e-mail/senha (Credentials) + OAuth (Google/GitHub).
@@ -71,10 +72,7 @@ export const authConfig = {
   // Cookies de sessão seguros: HttpOnly + SameSite; Secure em produção (SEC-06).
   cookies: {
     sessionToken: {
-      name:
-        serverEnv.NODE_ENV === 'production'
-          ? '__Secure-authjs.session-token'
-          : 'authjs.session-token',
+      name: sessionCookieName(serverEnv.NODE_ENV === 'production'),
       options: {
         httpOnly: true,
         sameSite: 'lax',

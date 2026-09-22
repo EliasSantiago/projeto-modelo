@@ -94,6 +94,39 @@ describe('authService.register', () => {
       bcrypt.compare('senha-forte-123', saved.passwordHash!),
     ).resolves.toBe(true)
   })
+
+  it('traduz corrida na constraint de unicidade para EmailInUseError', async () => {
+    // O lookup prévio não é atômico: dois cadastros simultâneos do mesmo
+    // e-mail passam os dois e o segundo estoura no INSERT. Quem chamou tem
+    // que ver o mesmo erro do caminho comum, não um 500 genérico.
+    mockUsers.findByEmail.mockResolvedValue(null)
+    mockUsers.create.mockRejectedValue(
+      Object.assign(new Error('duplicate key value'), { code: '23505' }),
+    )
+
+    await expect(
+      authService.register({
+        name: 'Novo',
+        email: 'novo@example.com',
+        password: 'senha-forte-123',
+      }),
+    ).rejects.toBeInstanceOf(EmailInUseError)
+  })
+
+  it('propaga erro de banco que NÃO é violação de unicidade', async () => {
+    mockUsers.findByEmail.mockResolvedValue(null)
+    mockUsers.create.mockRejectedValue(
+      Object.assign(new Error('connection terminated'), { code: '08006' }),
+    )
+
+    await expect(
+      authService.register({
+        name: 'Novo',
+        email: 'novo@example.com',
+        password: 'senha-forte-123',
+      }),
+    ).rejects.not.toBeInstanceOf(EmailInUseError)
+  })
 })
 
 describe('authService.verifyCredentials', () => {
@@ -114,6 +147,24 @@ describe('authService.verifyCredentials', () => {
     await expect(
       authService.verifyCredentials('fulano@example.com', 'qualquer'),
     ).resolves.toBeNull()
+  })
+
+  it.each([
+    ['usuário inexistente', null],
+    ['conta só-OAuth', { ...existingUser, passwordHash: null }],
+  ])('gasta o bcrypt mesmo com %s (anti-enumeração)', async (_label, row) => {
+    // Sem o compare contra o hash descartável, este caminho responderia em
+    // microssegundos e o de senha errada em ~100 ms. A diferença é medível
+    // de fora e diz quem tem conta aqui.
+    const compare = vi.spyOn(bcrypt, 'compare')
+    mockUsers.findByEmail.mockResolvedValue(row)
+
+    await authService.verifyCredentials('alvo@example.com', 'chute')
+
+    expect(compare).toHaveBeenCalledTimes(1)
+    // O segundo argumento é sempre um hash bcrypt válido, nunca undefined.
+    expect(compare.mock.calls[0]![1]).toMatch(/^\$2[aby]\$\d{2}\$/)
+    compare.mockRestore()
   })
 
   it('rejeita senha errada', async () => {

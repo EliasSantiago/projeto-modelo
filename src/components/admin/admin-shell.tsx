@@ -60,7 +60,9 @@ export function AdminShell({
         )}
       >
         <Navbar user={user} onMenuClick={() => setOpen(true)} />
-        <main className="flex-1 px-4 py-6">{children}</main>
+        <main id="conteudo" className="flex-1 px-4 py-6">
+          {children}
+        </main>
       </div>
     </div>
   )

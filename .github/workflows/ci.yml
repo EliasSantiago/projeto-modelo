@@ -17,6 +17,10 @@ concurrency:
 env:
   DATABASE_URL: postgresql://user:password@localhost:5432/db?sslmode=require
   AUTH_SECRET: ci-placeholder-secret-not-used-in-runtime
+  # O E2E roda `next start`, ou seja, NODE_ENV=production: sem AUTH_URL o
+  # Auth.js recusa o header Host (`UntrustedHost`) e toda chamada a `auth()`
+  # falha, testando um app configurado errado.
+  AUTH_URL: http://localhost:3000
   NEXT_PUBLIC_APP_NAME: Projeto Modelo
   NEXT_PUBLIC_APP_URL: http://localhost:3000
 

@@ -21,6 +21,7 @@ Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
 - [Segurança](#-segurança-owasp-top-10)
 - [Cache](#-cache)
 - [Testes](#-testes)
+- [Operação](#-operação)
 - [Deploy](#️-deploy-vercel--neon)
 - [Spec-Driven Development](#-spec-driven-development)
 - [Autor](#-autor)
@@ -193,6 +194,7 @@ cp .env.example .env.local
 | `pnpm lint` / `pnpm lint:fix`                 | ESLint                       |
 | `pnpm format` / `pnpm format:check`           | Prettier                     |
 | `pnpm test` / `pnpm test:watch`               | Vitest (unit + componente)   |
+| `pnpm test:coverage`                          | Vitest + cobertura (v8)      |
 | `pnpm test:e2e`                               | Playwright (E2E)             |
 | `pnpm db:generate` / `db:migrate` / `db:push` | Migrações Drizzle            |
 | `pnpm db:seed` / `db:studio`                  | Seed / Drizzle Studio        |
@@ -209,13 +211,18 @@ Controles já implementados, rastreáveis em
 - Autorização por posse do recurso (`task.userId === session.user.id`).
 - Cookies de sessão `HttpOnly` / `Secure` / `SameSite`.
 - Erros nunca vazam detalhes sensíveis ao cliente.
-- **Rate limiting** em login, cadastro e recuperação de senha
-  (`lib/rate-limit.ts`), contra força bruta e bombardeio de e-mail.
+- **Rate limiting** em login, cadastro, recuperação de senha, reenvio de
+  confirmação e consumo de token (`lib/rate-limit.ts`), contra força bruta e
+  bombardeio de e-mail.
 - **Security headers** em todas as rotas (`next.config.ts`): CSP,
   HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`,
-  `Permissions-Policy`.
+  `Permissions-Policy`, `Cross-Origin-Opener-Policy`.
 - Anti-enumeração de usuários na recuperação de senha: a resposta é idêntica
   exista ou não a conta, inclusive quando o envio falha.
+- Anti-enumeração **por tempo** no login: o `bcrypt.compare` roda mesmo sem
+  usuário (contra um hash descartável), então "conta inexistente", "conta
+  só-OAuth" e "senha errada" custam o mesmo e não dá para distingui-los
+  cronometrando a resposta.
 - **RBAC**: papéis `user`/`admin` no banco, `requireRole`/`requireAdmin`
   (`lib/session.ts`) e `adminAction` (`lib/safe-action.ts`). `/admin` é a
   rota protegida de referência.
@@ -268,6 +275,10 @@ Pontos que valem saber antes de cachear qualquer coisa:
   mutável a cada ação e já resolvido por uma query indexada.
 - **Prefira `updateTag`/`revalidateTag` a `revalidatePath`**: o path derruba a
   rota inteira, inclusive o shell estático que não mudou.
+- **Mutou dado NÃO cacheado? Use `refresh()`** (`next/cache`), como fazem as
+  actions de tarefas. Não existe entrada de cache para invalidar ali, só a
+  cópia que o cliente já baixou: `refresh()` re-renderiza o conteúdo dinâmico
+  da página atual e deixa o prerender intacto.
 
 Perfis nomeados por intenção (`CACHE_PROFILES`), ajustáveis num lugar só:
 
@@ -283,12 +294,36 @@ perfil pegou.
 ## 🧪 Testes
 
 ```bash
-pnpm test        # schemas, services (repo mockado), utils, componentes
-pnpm test:e2e    # gate de rota e sessão forjada (Playwright)
+pnpm test           # schemas, services (repo mockado), utils, componentes
+pnpm test:coverage  # o mesmo, com relatório de cobertura em ./coverage
+pnpm test:e2e       # gate de rota e sessão forjada (Playwright)
 ```
 
 O CI roda os dois em jobs separados, mais `pnpm audit`. O E2E sobe o **build
 de produção**, não o dev server: é o artefato que vai ao ar.
+
+A cobertura mede `actions/`, `lib/`, `repositories/`, `schemas/`, `services/` e
+`utils/`. `app/` e `components/` ficam fora de propósito: página e componente
+de apresentação são trabalho do E2E, e mantê-los na conta só produziria um
+número grande sem significado.
+
+## 🩺 Operação
+
+| Recurso                                              | Para que serve                                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `GET /api/health`                                    | Probe raso (não toca no banco) para uptime monitor e smoke test de deploy        |
+| [`src/instrumentation.ts`](./src/instrumentation.ts) | Valida o ambiente no boot e captura todo erro de requisição via `onRequestError` |
+| [`src/lib/logger.ts`](./src/lib/logger.ts)           | Log JSON de uma linha em produção, com redação de chaves sensíveis               |
+
+Para ligar Sentry (ou equivalente), inicialize no `register()` de
+`instrumentation.ts` e registre o `setErrorReporter` do logger — o exemplo está
+no fim de `lib/logger.ts`.
+
+Telas de falha, da mais específica para a mais genérica: `error.tsx` do
+segmento → `src/app/error.tsx` → `src/app/global-error.tsx` (este último
+substitui o `<html>`, então usa estilo inline: é a tela para quando o próprio
+layout quebrou). Nenhuma exibe `error.message`; todas mostram o `digest`, que é
+o que correlaciona a tela com o log do servidor.
 
 ## ☁️ Deploy (Vercel + Neon)
 
@@ -296,6 +331,9 @@ de produção**, não o dev server: é o artefato que vai ao ar.
 2. Importe o repositório na **Vercel**.
 3. Configure as variáveis de ambiente (as mesmas do `.env.local`).
    Localmente você pode sincronizar com `vercel env pull .env.local`.
+   Fora da Vercel/Cloudflare Pages, **`AUTH_URL` é obrigatória**: sem ela o
+   Auth.js recusa o header `Host` e todo `auth()` falha com `UntrustedHost`.
+   O boot registra um aviso quando está faltando.
 4. Aplique as migrações contra o banco de produção:
    `pnpm db:migrate` (com `DATABASE_URL` de produção).
 5. Faça o deploy. O `next build` roda com Cache Components (PPR) habilitado —
