@@ -51,6 +51,10 @@ Estão documentadas de propósito, não são descuido:
 - **Papel em cache no JWT.** O papel é lido no sign-in, então revogação de
   privilégio só vale no próximo login. Para revogação imediata, leia o papel
   a cada request ou invalide a sessão.
+- **`emailVerified` em cache no JWT**, pela mesma razão. Quem confirma o
+  e-mail durante uma sessão ativa só vê a mudança refletida no próximo login
+  — é o que a tela de confirmação pede. Se a sua app impuser
+  `requireVerifiedUser()`, avalie renovar a sessão logo após a confirmação.
 - **Conta não verificada não é bloqueada.** A confirmação de e-mail existe e
   funciona, mas não impede login por padrão: impor a política quebraria contas
   criadas antes da feature. Use `requireVerifiedUser()` nas rotas que exigem

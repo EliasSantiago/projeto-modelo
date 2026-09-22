@@ -31,6 +31,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/*
+            Atalho de teclado obrigatório para quem navega por Tab: sem ele,
+            chegar ao conteúdo exige atravessar a navegação inteira em toda
+            página (WCAG 2.4.1). Invisível até receber foco.
+          */}
+          <a
+            href="#conteudo"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-[var(--color-background)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:outline-2"
+          >
+            Pular para o conteúdo
+          </a>
           {children}
         </ThemeProvider>
       </body>

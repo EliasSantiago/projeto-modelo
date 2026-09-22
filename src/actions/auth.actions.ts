@@ -131,6 +131,11 @@ export async function resetPasswordAction(
   const parsed = resetPasswordSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
 
+  // Só por IP: a chave não pode incluir o token, senão cada tentativa teria
+  // o próprio balde e o limite não limitaria nada.
+  const limit = await checkRateLimit('tokenSubmit')
+  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
+
   try {
     await authService.resetPassword(parsed.data.token, parsed.data.password)
   } catch (error) {

@@ -52,12 +52,20 @@ app / components → features / hooks → actions → services → repositories 
   espalhados: tag com typo não quebra o build, só deixa de invalidar.
 - Invalide por tag (`updateTag` em Server Action) e não por `revalidatePath`,
   que derruba a rota inteira, inclusive o shell estático.
+- Mutação em dado **não cacheado** (por-usuário) não invalida nada: chame
+  `refresh()` de `next/cache`, que re-renderiza só o conteúdo dinâmico da
+  página atual. Ver `actions/task.actions.ts`.
 
 ## Segurança (Princípio III, sempre)
 
 - Só `NEXT_PUBLIC_*` no cliente. Secrets via `lib/env.server.ts` (`server-only`).
 - Banco só no servidor. Queries parametrizadas. Valide toda entrada.
 - Autorize por posse do recurso. Erros sem detalhe sensível ao cliente.
+- Resposta que depende da existência de uma conta precisa ser indistinguível
+  em **conteúdo e em tempo**: mensagem neutra e mesmo custo de CPU (ver o
+  compare contra hash descartável em `authService.verifyCredentials`).
+- Endpoint público que consome token ou dispara e-mail passa por
+  `checkRateLimit` (`lib/rate-limit.ts`).
 
 ## Antes de commitar
 

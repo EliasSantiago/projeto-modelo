@@ -24,9 +24,12 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           <ThemeToggle />
         </div>
 
-        <div className="flex flex-1 items-center justify-center py-8">
+        <main
+          id="conteudo"
+          className="flex flex-1 items-center justify-center py-8"
+        >
           <div className="w-full max-w-md">{children}</div>
-        </div>
+        </main>
       </div>
 
       {/* Painel decorativo (gradiente roxo com canto arredondado) */}
