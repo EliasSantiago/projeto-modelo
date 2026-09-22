@@ -15,7 +15,7 @@ import { logger } from '@/lib/logger'
  *  2. **Captura central de erro de servidor.** `onRequestError` recebe TODO
  *     erro não tratado de render, Route Handler, Server Action e proxy — nos
  *     dois runtimes. É o ponto certo para plugar Sentry & cia. sem espalhar
- *     try/catch pelo código.
+ *     try/catch pelo código (SEC-24).
  */
 export function register(): void {
   logger.info('Servidor iniciado', {
@@ -30,7 +30,7 @@ export function register(): void {
       'AUTH_URL não definida em produção: o Auth.js vai recusar o header ' +
         'Host (UntrustedHost) e toda chamada a auth() vai falhar. Defina ' +
         'AUTH_URL com a URL canônica da app, ou AUTH_TRUST_HOST=true se ' +
-        'houver um proxy reverso confiável na frente.',
+        'houver um proxy reverso confiável na frente. (SEC-23)',
     )
   }
 

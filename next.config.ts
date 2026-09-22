@@ -48,7 +48,7 @@ const securityHeaders = [
   // app não consegue mexer na nossa `window`. Fecha XS-Leaks e tabnabbing,
   // que `frame-ancestors` não cobre por tratarem só de iframe.
   // Auth.js usa redirect de página inteira no OAuth, não popup, então o
-  // login continua funcionando com `same-origin`.
+  // login continua funcionando com `same-origin` (SEC-22).
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
   // HSTS só faz sentido sob HTTPS; em dev (http://localhost) atrapalha.
   ...(isDev

@@ -41,7 +41,7 @@ export const RATE_LIMITS = {
    * O token tem 256 bits, então adivinhá-lo por força bruta não é o risco
    * real: o limite existe para que um script não use o endpoint como sonda
    * barata e para cortar o custo de CPU do bcrypt que cada tentativa válida
-   * dispara. Folgado o bastante para quem errou a confirmação de senha.
+   * dispara (SEC-21). Folgado o bastante para quem errou a confirmação.
    */
   tokenSubmit: { tokens: 10, window: '1 h' },
 } as const

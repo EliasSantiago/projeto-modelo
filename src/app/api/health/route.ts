@@ -11,7 +11,7 @@ import { APP } from '@/constants/app'
  *
  * Precisa de um check profundo (readiness de verdade)? Crie uma rota
  * SEPARADA, protegida por token, e faça ali o `select 1`. Assim o probe
- * público continua barato e o caro fica com quem opera.
+ * público continua barato e o caro fica com quem opera (SEC-26).
  */
 export async function GET() {
   // Marca a rota como dinâmica: health check prerenderizado no build

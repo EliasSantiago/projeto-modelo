@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
  * mensagem genérica, mas em dev ele carrega detalhe interno, e uma tela que
  * muda de conteúdo entre ambientes esconde exatamente o que precisaria ser
  * testado. O `digest` é o que correlaciona esta tela com o log do servidor
- * gravado por `instrumentation.ts` (SEC-07).
+ * gravado por `instrumentation.ts` (SEC-07, SEC-24).
  */
 export default function RootError({
   error,

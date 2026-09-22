@@ -46,7 +46,7 @@ const hashToken = (token: string) =>
  * Sem ele, "conta inexistente" responde em microssegundos e "senha errada"
  * em ~100 ms de bcrypt: a diferença é medível de fora e transforma o login
  * num oráculo de quem tem cadastro aqui — a mesma enumeração que o fluxo de
- * recuperação de senha já evita (OWASP A07/A01).
+ * recuperação de senha já evita (SEC-20, OWASP A07/A01).
  */
 const DUMMY_PASSWORD_HASH =
   '$2b$12$AW2WVs5z8Uaz3.aMHUyM..l82OOK5tEJNv9/pVedCkx.hbGgkpSGy'
@@ -57,7 +57,7 @@ const DUMMY_PASSWORD_HASH =
  * O lookup prévio de e-mail não é atômico: dois cadastros simultâneos com o
  * mesmo endereço passam os dois pela checagem e o segundo estoura no INSERT.
  * A constraint `unique` do banco é quem realmente garante a regra; aqui só
- * traduzimos o erro dela para o mesmo resultado do caminho comum.
+ * traduzimos o erro dela para o mesmo resultado do caminho comum (SEC-25).
  */
 function isUniqueViolation(error: unknown): boolean {
   return (
