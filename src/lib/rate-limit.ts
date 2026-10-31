@@ -124,12 +124,23 @@ function memoryLimit(bucket: RateLimitBucket, key: string): RateLimitResult {
   return { success: true, retryAfter: 0 }
 }
 
-/** IP do cliente a partir dos headers do proxy. */
+/**
+ * IP do cliente a partir dos headers do proxy.
+ *
+ * `x-real-ip` vem primeiro porque, onde existe, quem escreve é o proxy: a
+ * Vercel o define com o IP de origem, e o nginx costuma defini-lo com
+ * `$remote_addr`. Já o primeiro item do `x-forwarded-for` é o que o CLIENTE
+ * mandou, e só é confiável quando a borda sobrescreve o header (a Vercel faz
+ * isso; um proxy que apenas acrescenta, não). Ler o XFF antes deixaria quem
+ * forja o header trocar de balde a cada tentativa e anular o limite.
+ */
 async function clientIp(): Promise<string> {
   const h = await headers()
+  const realIp = h.get('x-real-ip')?.trim()
+  if (realIp) return realIp
   const forwarded = h.get('x-forwarded-for')
   if (forwarded) return forwarded.split(',')[0]!.trim()
-  return h.get('x-real-ip') ?? 'unknown'
+  return 'unknown'
 }
 
 /**

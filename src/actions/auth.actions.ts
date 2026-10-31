@@ -3,7 +3,7 @@
 import { AuthError } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
-import { signIn, signOut } from '@/lib/auth'
+import { enabledProviders, signIn, signOut } from '@/lib/auth'
 import {
   authService,
   EmailInUseError,
@@ -12,6 +12,7 @@ import {
 import {
   forgotPasswordSchema,
   loginSchema,
+  oauthProviderSchema,
   registerSchema,
   resendVerificationSchema,
   resetPasswordSchema,
@@ -185,9 +186,19 @@ export async function resendVerificationAction(
   }
 }
 
-/** Inicia o fluxo OAuth de um provedor a partir de um <form>. */
-export async function signInWithProvider(provider: string) {
-  await signIn(provider, { redirectTo: ROUTES.dashboard })
+/**
+ * Inicia o fluxo OAuth de um provedor a partir de um <form>.
+ *
+ * O `bind` no botão não protege nada: a action é um endpoint POST público e
+ * aceita qualquer valor de quem a chamar direto. Só segue para o Auth.js um
+ * provedor conhecido E configurado neste ambiente (SEC-03).
+ */
+export async function signInWithProvider(provider: unknown) {
+  const parsed = oauthProviderSchema.safeParse(provider)
+  if (!parsed.success || !enabledProviders[parsed.data]) {
+    redirect(ROUTES.login)
+  }
+  await signIn(parsed.data, { redirectTo: ROUTES.dashboard })
 }
 
 /** Encerra a sessão e volta para a home. */

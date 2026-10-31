@@ -11,9 +11,16 @@ vi.mock('@/lib/env.server', () => ({
 }))
 
 const currentIp = { value: '10.0.0.1' }
+const currentRealIp: { value: string | undefined } = { value: undefined }
 
 vi.mock('next/headers', () => ({
-  headers: async () => new Map([['x-forwarded-for', currentIp.value]]),
+  headers: async () =>
+    new Map(
+      [
+        ['x-forwarded-for', currentIp.value],
+        ['x-real-ip', currentRealIp.value],
+      ].filter((entry): entry is [string, string] => entry[1] !== undefined),
+    ),
 }))
 
 import { checkRateLimit, RATE_LIMITS, rateLimitMessage } from './rate-limit'
@@ -22,6 +29,7 @@ describe('checkRateLimit (backend em memória)', () => {
   beforeEach(() => {
     // Cada teste usa um IP novo: o Map de hits é módulo-global.
     currentIp.value = `10.0.0.${Math.floor(Math.random() * 100_000)}`
+    currentRealIp.value = undefined
   })
 
   it('libera requisições dentro da cota do bucket', async () => {
@@ -81,6 +89,20 @@ describe('checkRateLimit (backend em memória)', () => {
 
     // Mesmo IP de origem, proxies diferentes na cadeia: ainda é o mesmo cliente.
     currentIp.value = '203.0.113.9, 198.51.100.7'
+    expect((await checkRateLimit('register')).success).toBe(false)
+  })
+
+  it('prefere o x-real-ip do proxy ao x-forwarded-for do cliente', async () => {
+    const { tokens } = RATE_LIMITS.register
+    currentRealIp.value = '192.0.2.44'
+
+    for (let i = 0; i < tokens; i++) {
+      // Quem forja o XFF a cada tentativa não ganha balde novo.
+      currentIp.value = `198.51.100.${i}`
+      expect((await checkRateLimit('register')).success).toBe(true)
+    }
+
+    currentIp.value = '198.51.100.250'
     expect((await checkRateLimit('register')).success).toBe(false)
   })
 })

@@ -14,7 +14,7 @@ vi.mock('@/repositories/user.repository', () => ({
 vi.mock('@/repositories/email-verification.repository', () => ({
   emailVerificationRepository: {
     create: vi.fn(),
-    findValid: vi.fn(),
+    consumeValid: vi.fn(),
     deleteForUser: vi.fn(),
   },
 }))
@@ -22,7 +22,7 @@ vi.mock('@/repositories/email-verification.repository', () => ({
 vi.mock('@/repositories/password-reset.repository', () => ({
   passwordResetRepository: {
     create: vi.fn(),
-    findValid: vi.fn(),
+    consumeValid: vi.fn(),
     deleteForUser: vi.fn(),
   },
 }))
@@ -262,7 +262,7 @@ describe('authService.resetPassword', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('recusa token inválido ou expirado', async () => {
-    mockTokens.findValid.mockResolvedValue(null)
+    mockTokens.consumeValid.mockResolvedValue(null)
 
     await expect(
       authService.resetPassword('token-qualquer', 'nova-senha-123'),
@@ -272,19 +272,19 @@ describe('authService.resetPassword', () => {
   })
 
   it('procura pelo hash do token, não pelo valor recebido', async () => {
-    mockTokens.findValid.mockResolvedValue(null)
+    mockTokens.consumeValid.mockResolvedValue(null)
 
     await authService
       .resetPassword('token-cru', 'nova-senha-123')
       .catch(() => undefined)
 
-    expect(mockTokens.findValid).toHaveBeenCalledWith(
+    expect(mockTokens.consumeValid).toHaveBeenCalledWith(
       expect.not.stringContaining('token-cru'),
     )
   })
 
   it('troca a senha e queima o token usado', async () => {
-    mockTokens.findValid.mockResolvedValue({
+    mockTokens.consumeValid.mockResolvedValue({
       id: 't1',
       userId: 'user-1',
       tokenHash: 'hash',
@@ -299,6 +299,24 @@ describe('authService.resetPassword', () => {
     await expect(bcrypt.compare('nova-senha-123', newHash)).resolves.toBe(true)
     // Token de uso único: some depois de aplicado.
     expect(mockTokens.deleteForUser).toHaveBeenCalledWith('user-1')
+  })
+
+  it('consome o token antes de trocar a senha (SEC-15)', async () => {
+    mockTokens.consumeValid.mockResolvedValue({
+      id: 't1',
+      userId: 'user-1',
+      tokenHash: 'hash',
+      expires: new Date(Date.now() + 60_000),
+      createdAt: new Date(),
+    })
+
+    await authService.resetPassword('token-cru', 'nova-senha-123')
+
+    // Consumir depois abriria a corrida em que duas requisições com o mesmo
+    // link trocam a senha: a ordem é a garantia de uso único.
+    expect(mockTokens.consumeValid.mock.invocationCallOrder[0]!).toBeLessThan(
+      mockUsers.updatePasswordHash.mock.invocationCallOrder[0]!,
+    )
   })
 })
 
@@ -337,8 +355,8 @@ describe('authService.verifyEmail', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('recusa token inválido ou expirado (SEC-15)', async () => {
-    // `findValid` já filtra expirados na query: ausência cobre os dois casos.
-    mockVerify.findValid.mockResolvedValue(null)
+    // `consumeValid` já filtra expirados na query: ausência cobre os dois casos.
+    mockVerify.consumeValid.mockResolvedValue(null)
 
     await expect(authService.verifyEmail('qualquer')).rejects.toBeInstanceOf(
       InvalidVerificationTokenError,
@@ -347,16 +365,16 @@ describe('authService.verifyEmail', () => {
   })
 
   it('procura pelo hash, não pelo token recebido', async () => {
-    mockVerify.findValid.mockResolvedValue(null)
+    mockVerify.consumeValid.mockResolvedValue(null)
     await authService.verifyEmail('token-cru').catch(() => undefined)
 
-    expect(mockVerify.findValid).toHaveBeenCalledWith(
+    expect(mockVerify.consumeValid).toHaveBeenCalledWith(
       expect.not.stringContaining('token-cru'),
     )
   })
 
   it('verifica a conta dona do convite, não outra (SEC-18)', async () => {
-    mockVerify.findValid.mockResolvedValue({
+    mockVerify.consumeValid.mockResolvedValue({
       id: 'v1',
       userId: 'dono-do-token',
       tokenHash: 'hash',
@@ -370,7 +388,7 @@ describe('authService.verifyEmail', () => {
   })
 
   it('queima o convite depois de usar, tornando o link de uso único', async () => {
-    mockVerify.findValid.mockResolvedValue({
+    mockVerify.consumeValid.mockResolvedValue({
       id: 'v1',
       userId: 'user-1',
       tokenHash: 'hash',

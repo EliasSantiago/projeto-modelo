@@ -27,8 +27,12 @@ export function proxy(request: NextRequest) {
   return NextResponse.redirect(loginUrl)
 }
 
-export const proxyConfig = {
+export const config = {
   /**
+   * O nome do export TEM que ser `config`: é o único que o Next lê. Com
+   * qualquer outro nome o matcher é ignorado em silêncio e o proxy passa a
+   * rodar em toda requisição, inclusive `_next/static`.
+   *
    * Só o que pode virar uma rota protegida. Ficam de fora os assets, a API do
    * Auth.js (que precisa responder a deslogado, é ela que faz o login) e os
    * arquivos de metadado gerados pelo Next. Rodar o proxy neles seria custo

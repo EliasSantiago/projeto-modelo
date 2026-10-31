@@ -139,11 +139,14 @@ export const authService = {
    * Confirma o endereço a partir do token do link.
    *
    * A conta alvo vem do token no banco, nunca da requisição: é isso que
-   * impede um convite de verificar outra conta (SEC-18). O token é apagado
-   * em seguida, tornando o link de uso único (SEC-15).
+   * impede um convite de verificar outra conta (SEC-18). O token é consumido
+   * antes do efeito, de forma atômica, tornando o link de uso único mesmo
+   * sob requisições concorrentes (SEC-15).
    */
   async verifyEmail(token: string): Promise<void> {
-    const record = await emailVerificationRepository.findValid(hashToken(token))
+    const record = await emailVerificationRepository.consumeValid(
+      hashToken(token),
+    )
     if (!record) throw new InvalidVerificationTokenError()
 
     await userRepository.markEmailVerified(record.userId)
@@ -254,9 +257,14 @@ export const authService = {
     }
   },
 
-  /** Redefine a senha a partir de um token válido. */
+  /**
+   * Redefine a senha a partir de um token válido.
+   *
+   * O token é consumido ANTES de trocar a senha: se a troca falhar depois, a
+   * pessoa pede outro link, o que é bem melhor que um link reaproveitável.
+   */
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const record = await passwordResetRepository.findValid(hashToken(token))
+    const record = await passwordResetRepository.consumeValid(hashToken(token))
     if (!record) throw new InvalidResetTokenError()
 
     const passwordHash = await bcrypt.hash(newPassword, 12)
