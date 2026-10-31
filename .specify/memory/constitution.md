@@ -1,11 +1,12 @@
 # Constituição, Projeto Modelo Next.js
 
-> Documento de governança do SDD (Spec-Driven Development). Define os princípios
-> **inegociáveis**. Qualquer `spec.md`, `plan.md` ou `tasks.md` que os viole deve
-> ser corrigido antes da implementação. A ordem de trabalho é sempre:
-> **constitution → spec → plan → tasks → implementação**.
+> Define os princípios **inegociáveis** do projeto. Valem para todo código,
+> com ou sem `spec.md`/`plan.md`/`tasks.md`; esses artefatos são opcionais
+> desde a versão 1.1.0.
 
-Versão: 1.0.0 · Ratificada: 2026-07-04
+Versão: 1.1.0 · Ratificada: 2026-07-04 · Emendada: 2026-10-31 (fluxo
+spec → plan → tasks deixa de ser obrigatório: o modelo atual planeja dentro
+da própria tarefa, e a cerimônia virou custo sem ganho em mudança comum)
 
 ---
 
@@ -80,4 +81,4 @@ schemas, types, lib, utils, constants: transversais (sem dependência de UI)
 
 Alterar este documento exige: (1) justificativa registrada, (2) incremento de
 versão semântica, (3) revisão dos `plan.md` afetados. Guidance específico de
-implementação vive no `AGENTS.md`/`CLAUDE.md`, não aqui.
+implementação vive no `CLAUDE.md`, não aqui.

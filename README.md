@@ -5,8 +5,8 @@ produtos. Traz autenticação, banco de dados, arquitetura em camadas, UI,
 testes, qualidade e documentação já configurados, e uma feature de
 referência (`tasks`) demonstrando o fluxo completo ponta-a-ponta.
 
-Construído com **Spec-Driven Development (SDD)**: as decisões vivem em
-`specs/` e `.specify/memory/constitution.md` antes do código.
+As decisões de arquitetura ficam registradas em `specs/` e
+`.specify/memory/constitution.md`.
 
 ---
 
@@ -344,15 +344,15 @@ o que correlaciona a tela com o log do servidor.
 
 ## 🧭 Spec-Driven Development
 
-Este projeto foi construído seguindo SDD. Os artefatos:
+Este projeto nasceu com SDD, e os artefatos seguem como registro de decisões:
 
 - [`.specify/memory/constitution.md`](./.specify/memory/constitution.md), princípios inegociáveis
 - [`specs/001-projeto-modelo/spec.md`](./specs/001-projeto-modelo/spec.md), o quê e por quê
 - [`specs/001-projeto-modelo/plan.md`](./specs/001-projeto-modelo/plan.md), como (decisões técnicas)
 - [`specs/001-projeto-modelo/tasks.md`](./specs/001-projeto-modelo/tasks.md), tarefas rastreáveis
 
-Para uma nova feature, siga a mesma ordem: **constitution → spec → plan →
-tasks → implementação**.
+O fluxo é **opcional**: para feature grande ou ambígua, ele ainda ajuda a
+decidir antes de codar. No resto, implemente direto.
 
 ```bash
 # Com Claude Code: numera a pasta, copia o template e conduz a spec
@@ -367,8 +367,8 @@ cp -r specs/_template specs/002-relatorios-de-vendas
 - [`.claude/commands/nova-feature.md`](./.claude/commands/nova-feature.md),
   o slash command
 
-Cada etapa depende do "ok" na anterior. Detalhes em
-[`AGENTS.md`](./AGENTS.md) e [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+Detalhes em [`CLAUDE.md`](./CLAUDE.md) e
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## 👤 Autor
 

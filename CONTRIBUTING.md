@@ -1,25 +1,15 @@
 # Contribuindo
 
-Obrigado pelo interesse. Este projeto segue **Spec-Driven Development**: a
-decisão vem antes do código, e fica escrita.
+Obrigado pelo interesse.
 
 > Para o guia completo de arquitetura e convenções, leia
-> [`AGENTS.md`](./AGENTS.md) (o mesmo arquivo apontado por `CLAUDE.md`).
+> [`CLAUDE.md`](./CLAUDE.md).
 > Ele vale para humanos e para agentes de IA.
 
 ## Antes de abrir PR
 
-### 1. Correção pequena (bug, typo, ajuste de doc)
-
-Vá direto ao código. Não precisa de spec.
-
-### 2. Feature ou mudança de comportamento
-
-Passe pelo fluxo SDD **antes** de implementar:
-
-```
-constitution → spec → plan → tasks → implementação
-```
+Vá direto ao código. Spec/plan/tasks são opcionais: valem para feature grande
+ou ambígua, cuja decisão mereça ficar registrada.
 
 ```bash
 # Com Claude Code:
@@ -28,10 +18,6 @@ constitution → spec → plan → tasks → implementação
 # Manualmente:
 cp -r specs/_template specs/<NNN>-<nome>
 ```
-
-Cada etapa depende da anterior estar aprovada. PR que chega com código sem
-spec vai ser pedido de volta — não por burocracia, mas porque revisar decisão
-depois de implementada custa muito mais caro.
 
 ## Regras que o revisor vai conferir
 
