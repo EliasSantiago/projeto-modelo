@@ -64,6 +64,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Partial Prerendering / Cache Components (Next.js 16+).
   cacheComponents: true,
+  // Prefetch de um App Shell por rota, reaproveitado por todo <Link> que
+  // aponta para ela (Next.js 16.3+). Vira padrão no próximo major. O que
+  // depende de `searchParams` já fica sob <Suspense> e chega após navegar.
+  partialPrefetching: true,
   // Falha o build de produção em erros de tipo, qualidade é um gate.
   typescript: { ignoreBuildErrors: false },
   // Não anunciar o framework reduz alvo fácil de fingerprinting.

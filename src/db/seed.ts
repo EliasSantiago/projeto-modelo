@@ -5,7 +5,7 @@ import { drizzle } from 'drizzle-orm/neon-http'
 import * as schema from './schema'
 
 // Seed opcional. Rode com: pnpm db:seed
-config({ path: '.env.local' })
+config({ path: '.env.local', quiet: true })
 
 const databaseUrl = process.env.DATABASE_URL
 if (!databaseUrl) throw new Error('DATABASE_URL ausente')

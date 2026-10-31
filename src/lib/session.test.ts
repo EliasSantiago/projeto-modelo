@@ -4,6 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 // interessa a lógica de autorização.
 vi.mock('@/lib/auth', () => ({ auth: vi.fn() }))
 
+// `connection()` só existe dentro de uma requisição do Next; fora dela lança.
+vi.mock('next/server', () => ({ connection: vi.fn(async () => undefined) }))
+
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(() => {
     throw new Error('NEXT_REDIRECT')

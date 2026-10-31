@@ -1,5 +1,6 @@
 import 'server-only'
 import { forbidden, redirect } from 'next/navigation'
+import { connection } from 'next/server'
 import { auth } from '@/lib/auth'
 import { ROUTES } from '@/constants/routes'
 import type { UserRole } from '@/db/schema'
@@ -29,8 +30,19 @@ export function hasRole(user: SessionUser, minimum: UserRole): boolean {
   return ROLE_LEVEL[user.role] >= ROLE_LEVEL[minimum]
 }
 
-/** Retorna o usuário autenticado ou `null`. Uso em Server Components. */
+/**
+ * Retorna o usuário autenticado ou `null`. Uso em Server Components.
+ *
+ * `connection()` vem antes de `auth()` de propósito. Com Partial Prefetching
+ * o Next pré-renderiza em tempo de request o App Shell de cada rota, e nele
+ * entra o que lê cookies. Só que o `auth()` do Auth.js gera valor aleatório
+ * (token CSRF) a cada chamada, e valor aleatório no prerender é erro
+ * (`blocking-prerender-crypto`). Marcar a leitura como "só na requisição"
+ * tira a sessão do App Shell: ela chega por streaming logo após a navegação,
+ * e o resto da página segue prefetchado.
+ */
 export async function getCurrentUser(): Promise<SessionUser | null> {
+  await connection()
   const session = await auth()
   return session?.user ?? null
 }

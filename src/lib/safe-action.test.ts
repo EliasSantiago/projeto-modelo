@@ -6,6 +6,9 @@ import { z } from 'zod'
 // cópia do comportamento dentro do teste.
 vi.mock('@/lib/auth', () => ({ auth: vi.fn() }))
 
+// `connection()` só existe dentro de uma requisição do Next; fora dela lança.
+vi.mock('next/server', () => ({ connection: vi.fn(async () => undefined) }))
+
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(),
   forbidden: vi.fn(),

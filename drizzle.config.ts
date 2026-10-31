@@ -2,7 +2,7 @@ import { config } from 'dotenv'
 import { defineConfig } from 'drizzle-kit'
 
 // Drizzle Kit roda fora do Next.js; carrega o env manualmente.
-config({ path: '.env.local' })
+config({ path: '.env.local', quiet: true })
 
 const databaseUrl = process.env.DATABASE_URL
 if (!databaseUrl) {
