@@ -79,7 +79,7 @@ Detalhes e justificativas: [`specs/001-projeto-modelo/plan.md`](./specs/001-proj
 
 ## 📋 Pré-requisitos
 
-- **Node.js 20+** (recomendado 24, veja `.nvmrc`)
+- **Node.js 22.22+ ou 24.15+** (recomendado 24, veja `.nvmrc`)
 - **pnpm 10+**, instale com `npm install -g pnpm`
 - Uma conta e um banco no **[Neon](https://neon.tech)** (gratuito para começar)
 - (Opcional) Credenciais OAuth do **Google** e/ou **GitHub**

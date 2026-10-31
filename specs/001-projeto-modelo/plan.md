@@ -5,28 +5,28 @@
 
 ---
 
-## 1. Stack (versões reais, verificadas em 2026-07-04)
+## 1. Stack (versões reais, verificadas em 2026-10-31)
 
-| Área            | Escolha                                                 | Versão                                  |
-| --------------- | ------------------------------------------------------- | --------------------------------------- |
-| Framework       | Next.js (App Router, RSC, Server Actions, Turbopack)    | `16.2.10`                               |
-| Runtime UI      | React / React DOM                                       | `19.2.7`                                |
-| Linguagem       | TypeScript (strict)                                     | `6.0.3`                                 |
-| Estilo          | Tailwind CSS (CSS-first, `@tailwindcss/postcss`)        | `4.3.2`                                 |
-| Componentes     | ShadCN/UI (Radix + CVA)                                 | CLI `canary`                            |
-| Ícones          | Heroicons                                               | `2.2.0`                                 |
-| Animação        | Framer Motion (`motion`)                                | `12.42.2`                               |
-| Tema            | next-themes                                             | `0.4.6`                                 |
-| Formulários     | React Hook Form + `@hookform/resolvers`                 | `7.80.0` / `5.4.0`                      |
-| Validação       | Zod                                                     | `4.4.3`                                 |
-| ORM             | Drizzle ORM + Drizzle Kit                               | `0.45.2` / `0.31.10`                    |
-| Banco           | Neon Postgres (`@neondatabase/serverless`)              | `1.1.0`                                 |
-| Auth            | Auth.js v5 (`next-auth@beta`) + `@auth/drizzle-adapter` | `5.0.0-beta.31` / `1.11.2`              |
-| Estado cliente  | Zustand (quando necessário)                             | `5.0.14`                                |
-| Testes unit     | Vitest + Testing Library + jsdom                        | `4.1.9`                                 |
-| Testes E2E      | Playwright                                              | `1.61.1`                                |
-| Qualidade       | ESLint (flat) + Prettier + Husky + lint-staged          | `9.39.4` / `3.9.4` / `9.1.7` / `17.0.8` |
-| Package manager | pnpm                                                    | `10.x`                                  |
+| Área            | Escolha                                                 | Versão                                   |
+| --------------- | ------------------------------------------------------- | ---------------------------------------- |
+| Framework       | Next.js (App Router, RSC, Server Actions, Turbopack)    | `16.4.3`                                 |
+| Runtime UI      | React / React DOM                                       | `19.3.1`                                 |
+| Linguagem       | TypeScript (strict)                                     | `6.0.3`                                  |
+| Estilo          | Tailwind CSS (CSS-first, `@tailwindcss/postcss`)        | `4.3.3`                                  |
+| Componentes     | ShadCN/UI (Radix + CVA)                                 | CLI `canary`                             |
+| Ícones          | Heroicons                                               | `2.2.0`                                  |
+| Animação        | Framer Motion (`motion`)                                | `14.9.0`                                 |
+| Tema            | next-themes                                             | `0.4.6`                                  |
+| Formulários     | React Hook Form + `@hookform/resolvers`                 | `7.91.0` / `7.0.0`                       |
+| Validação       | Zod                                                     | `4.6.7`                                  |
+| ORM             | Drizzle ORM + Drizzle Kit                               | `0.45.4` / `0.31.11`                     |
+| Banco           | Neon Postgres (`@neondatabase/serverless`)              | `1.2.0`                                  |
+| Auth            | Auth.js v5 (`next-auth@beta`) + `@auth/drizzle-adapter` | `5.0.0-beta.32` / `1.11.3`               |
+| Estado cliente  | Zustand (quando necessário)                             | `5.0.16`                                 |
+| Testes unit     | Vitest + Testing Library + jsdom                        | `5.0.5` / `16.3.3` / `30.1.3`            |
+| Testes E2E      | Playwright                                              | `1.64.1`                                 |
+| Qualidade       | ESLint (flat) + Prettier + Husky + lint-staged          | `9.39.5` / `3.9.10` / `9.1.7` / `17.6.0` |
+| Package manager | pnpm                                                    | `10.x`                                   |
 
 ## 2. Estrutura de Pastas (contrato de arquitetura)
 
@@ -117,9 +117,9 @@ Regra de dependência (Princípio IV): UI → features → actions → services 
 
 ## 8. Riscos & Mitigações
 
-| Risco                                  | Mitigação                                                |
-| -------------------------------------- | -------------------------------------------------------- |
-| Auth.js v5 em beta                     | Fixar versão; isolar em `lib/auth`; cobrir com E2E       |
-| TS 6 / Tailwind 4 / ESLint 10 recentes | Configs mínimas e documentadas; build no CI local valida |
-| Vazamento de secret                    | Separação server/client de env + `server-only` + revisão |
-| Provedor de e-mail em dev              | Transporte de log/console; SMTP real só em prod          |
+| Risco                                 | Mitigação                                                |
+| ------------------------------------- | -------------------------------------------------------- |
+| Auth.js v5 em beta                    | Fixar versão; isolar em `lib/auth`; cobrir com E2E       |
+| TS 6 / Tailwind 4 / ESLint 9 recentes | Configs mínimas e documentadas; build no CI local valida |
+| Vazamento de secret                   | Separação server/client de env + `server-only` + revisão |
+| Provedor de e-mail em dev             | Transporte de log/console; SMTP real só em prod          |

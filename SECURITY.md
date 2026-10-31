@@ -58,6 +58,21 @@ Duas regras para os overrides, porque é fácil trocar um problema por outro:
 2. **Remova o override quando quem puxa a dependência subir sozinho.** Override
    esquecido é pin invisível: segura a árvore inteira numa versão antiga e
    ninguém lembra por quê.
+3. **Dê escopo ao override quando só um consumidor precisa dele**
+   (`"minimatch@3>brace-expansion": "^1.1.18"`). Um override global vale para
+   TODO consumidor do pacote, inclusive os de outro major: um
+   `brace-expansion@^1` global rebaixava o `minimatch@10`, que pede `^5`, e
+   nenhum teste acusou. Confira com `pnpm why <pacote>` depois de aplicar.
+
+### Advisories moderados aceitos
+
+- **`esbuild` via `drizzle-kit` → `@esbuild-kit/core-utils`:** a falha está no
+  servidor de desenvolvimento do esbuild (`serve`), que o `@esbuild-kit` não
+  usa. A correção exigiria cruzar breaking change (semver 0.x).
+- **`minimatch` via ESLint 9:** a entrada são os globs do próprio repositório.
+  Corrigido só no minimatch 11, que o ESLint 9 não usa.
+
+Revise esta lista a cada atualização do `drizzle-kit` e do ESLint.
 
 ## Limitações conhecidas
 
@@ -71,6 +86,17 @@ Estão documentadas de propósito, não são descuido:
 - **Papel em cache no JWT.** O papel é lido no sign-in, então revogação de
   privilégio só vale no próximo login. Para revogação imediata, leia o papel
   a cada request ou invalide a sessão.
+- **Redefinir a senha não derruba sessões ativas.** A sessão é um JWT
+  assinado e vale até expirar. Quem redefine a senha porque a conta foi
+  tomada continua com o invasor logado até lá. Para revogação, guarde uma
+  versão de sessão no usuário e confira no callback `jwt` (custa uma leitura
+  por request) ou troque para sessão em banco.
+- **Rate limit de login por origem + conta, não só por conta.** Impede que um
+  atacante trave o login alheio, mas não limita tentativas vindas de muitas
+  origens contra a mesma conta. O IP vem de `x-real-ip` e, na falta dele, do
+  primeiro item do `x-forwarded-for`, que só é confiável quando o proxy da
+  borda sobrescreve o header (a Vercel faz isso). Fora da Vercel, configure o
+  proxy para definir `x-real-ip`.
 - **`emailVerified` em cache no JWT**, pela mesma razão. Quem confirma o
   e-mail durante uma sessão ativa só vê a mudança refletida no próximo login
   — é o que a tela de confirmação pede. Se a sua app impuser
