@@ -85,13 +85,14 @@ Nenhuma entidade nova e nenhuma coluna nova.
 
 Numeração continua de SEC-27 (última usada na feature 003).
 
-| #      | Controle                                                                          | Verificação                                                                                  |
-| ------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| SEC-28 | Senha limitada ao que o verificador de fato lê                                    | Teste prova a colisão que o limite evita e que o schema recusa a senha que a causaria        |
-| SEC-29 | Link de uso único consumido de forma atômica                                      | Consumo e checagem de validade numa única operação; teste confirma o consumo antes do efeito |
-| SEC-30 | Ação pública valida também os argumentos fixados pela interface                   | Provedor social desconhecido ou não configurado é recusado antes de chegar ao fluxo de auth  |
-| SEC-31 | Origem da requisição lida primeiro do cabeçalho escrito pelo proxy                | Teste: trocar o cabeçalho que o cliente controla não gera cota nova                          |
-| SEC-32 | Pipeline de integração com privilégio mínimo e sem credencial persistida em disco | Inspeção do workflow                                                                         |
+| #      | Controle                                                                              | Verificação                                                                                  |
+| ------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| SEC-28 | Senha limitada ao que o verificador de fato lê                                        | Teste prova a colisão que o limite evita e que o schema recusa a senha que a causaria        |
+| SEC-29 | Link de uso único consumido de forma atômica                                          | Consumo e checagem de validade numa única operação; teste confirma o consumo antes do efeito |
+| SEC-30 | Ação pública valida também os argumentos fixados pela interface                       | Provedor social desconhecido ou não configurado é recusado antes de chegar ao fluxo de auth  |
+| SEC-31 | Origem da requisição lida primeiro do cabeçalho escrito pelo proxy                    | Teste: trocar o cabeçalho que o cliente controla não gera cota nova                          |
+| SEC-32 | Pipeline de integração com privilégio mínimo e sem credencial persistida em disco     | Inspeção do workflow                                                                         |
+| SEC-33 | Produção recusa segredo de sessão fraco ou de exemplo; dados demo sem senha conhecida | Teste do schema de ambiente; build com o segredo de exemplo falha; seed recusa produção      |
 
 ## 9. Critérios de Aceite Globais (Definition of Done)
 

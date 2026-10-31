@@ -6,50 +6,78 @@ import { z } from 'zod'
  * qualquer tentativa de importá-lo em código de cliente quebra o build,
  * garantindo que secrets nunca entrem no bundle do browser (SEC-01).
  */
-const serverEnvSchema = z.object({
-  NODE_ENV: z
-    .enum(['development', 'test', 'production'])
-    .default('development'),
 
-  DATABASE_URL: z.string().url('DATABASE_URL deve ser uma URL válida'),
+/** Valor de exemplo do `.env.example`: público, logo inútil como segredo. */
+export const AUTH_SECRET_PLACEHOLDER = 'troque-por-um-segredo-forte'
 
-  AUTH_SECRET: z
-    .string()
-    .min(1, 'AUTH_SECRET é obrigatório (gere com `npx auth secret`)'),
-  AUTH_URL: z.string().url().optional(),
+/** `npx auth secret` gera 32 bytes; menos que isso é segredo fraco. */
+const AUTH_SECRET_MIN_LENGTH = 32
 
-  // Sinais de que o Auth.js pode confiar no header `Host` da requisição.
-  // Ele recusa (`UntrustedHost`) quando roda em produção sem nenhum deles,
-  // porque derivar a URL de callback de um header que o cliente controla é
-  // como um atacante redireciona o fluxo de OAuth para o domínio dele.
-  // `VERCEL` e `CF_PAGES` são injetadas pelas próprias plataformas.
-  AUTH_TRUST_HOST: z.string().optional(),
-  VERCEL: z.string().optional(),
-  CF_PAGES: z.string().optional(),
+export const serverEnvSchema = z
+  .object({
+    NODE_ENV: z
+      .enum(['development', 'test', 'production'])
+      .default('development'),
 
-  AUTH_GOOGLE_ID: z.string().optional(),
-  AUTH_GOOGLE_SECRET: z.string().optional(),
-  AUTH_GITHUB_ID: z.string().optional(),
-  AUTH_GITHUB_SECRET: z.string().optional(),
+    DATABASE_URL: z.string().url('DATABASE_URL deve ser uma URL válida'),
 
-  // --- E-mail ------------------------------------------------------------
-  // Provedor explícito. Ausente, `lib/mail` detecta pelo que estiver
-  // configurado: resend → smtp → console.
-  MAIL_PROVIDER: z.enum(['resend', 'smtp', 'console']).optional(),
-  // Remetente, ex.: "Projeto Modelo <no-reply@seudominio.com>".
-  MAIL_FROM: z.string().optional(),
-  RESEND_API_KEY: z.string().optional(),
+    AUTH_SECRET: z
+      .string()
+      .min(1, 'AUTH_SECRET é obrigatório (gere com `npx auth secret`)'),
+    AUTH_URL: z.string().url().optional(),
 
-  // SMTP (alternativa ao Resend). `AUTH_EMAIL_FROM` é o nome legado de
-  // `MAIL_FROM`, mantido para não quebrar quem já tinha o .env preenchido.
-  AUTH_EMAIL_SERVER: z.string().optional(),
-  AUTH_EMAIL_FROM: z.string().optional(),
+    // Sinais de que o Auth.js pode confiar no header `Host` da requisição.
+    // Ele recusa (`UntrustedHost`) quando roda em produção sem nenhum deles,
+    // porque derivar a URL de callback de um header que o cliente controla é
+    // como um atacante redireciona o fluxo de OAuth para o domínio dele.
+    // `VERCEL` e `CF_PAGES` são injetadas pelas próprias plataformas.
+    AUTH_TRUST_HOST: z.string().optional(),
+    VERCEL: z.string().optional(),
+    CF_PAGES: z.string().optional(),
 
-  // Rate limiting distribuído (Upstash Redis). Sem estas variáveis o
-  // limitador cai para um contador em memória, adequado só a dev.
-  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
-  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
-})
+    AUTH_GOOGLE_ID: z.string().optional(),
+    AUTH_GOOGLE_SECRET: z.string().optional(),
+    AUTH_GITHUB_ID: z.string().optional(),
+    AUTH_GITHUB_SECRET: z.string().optional(),
+
+    // --- E-mail ------------------------------------------------------------
+    // Provedor explícito. Ausente, `lib/mail` detecta pelo que estiver
+    // configurado: resend → smtp → console.
+    MAIL_PROVIDER: z.enum(['resend', 'smtp', 'console']).optional(),
+    // Remetente, ex.: "Projeto Modelo <no-reply@seudominio.com>".
+    MAIL_FROM: z.string().optional(),
+    RESEND_API_KEY: z.string().optional(),
+
+    // SMTP (alternativa ao Resend). `AUTH_EMAIL_FROM` é o nome legado de
+    // `MAIL_FROM`, mantido para não quebrar quem já tinha o .env preenchido.
+    AUTH_EMAIL_SERVER: z.string().optional(),
+    AUTH_EMAIL_FROM: z.string().optional(),
+
+    // Rate limiting distribuído (Upstash Redis). Sem estas variáveis o
+    // limitador cai para um contador em memória, adequado só a dev.
+    UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+  })
+  /**
+   * Em produção, o segredo que assina as sessões precisa ser forte e não
+   * pode ser o do exemplo. O repositório é público: quem conhece o segredo
+   * fabrica um token de sessão válido, inclusive com papel `admin`, porque o
+   * papel viaja dentro do token (SEC-33). Fora de produção, o exemplo é
+   * aceito para o projeto subir sem atrito na primeira execução.
+   */
+  .superRefine((env, ctx) => {
+    if (env.NODE_ENV !== 'production') return
+    if (
+      env.AUTH_SECRET === AUTH_SECRET_PLACEHOLDER ||
+      env.AUTH_SECRET.length < AUTH_SECRET_MIN_LENGTH
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['AUTH_SECRET'],
+        message: `AUTH_SECRET fraco ou de exemplo: em produção use ${AUTH_SECRET_MIN_LENGTH}+ caracteres aleatórios (\`npx auth secret\`)`,
+      })
+    }
+  })
 
 const parsed = serverEnvSchema.safeParse(process.env)
 

@@ -91,11 +91,7 @@ export default function DocsPage() {
               <strong className="text-navy-700 dark:text-white">
                 demo@example.com
               </strong>{' '}
-              /{' '}
-              <strong className="text-navy-700 dark:text-white">
-                password123
-              </strong>
-              .
+              com a senha que o seed mostra no terminal.
             </p>
           </Card>
         </div>

@@ -74,6 +74,16 @@ Duas regras para os overrides, porque é fácil trocar um problema por outro:
 
 Revise esta lista a cada atualização do `drizzle-kit` e do ESLint.
 
+## Antes do primeiro deploy
+
+- **`AUTH_SECRET` forte e exclusivo.** Em produção o boot recusa o valor do
+  `.env.example` e qualquer segredo com menos de 32 caracteres: quem conhece o
+  segredo fabrica sessão válida, inclusive de admin. Gere com
+  `npx auth secret`.
+- **Não rode `pnpm db:seed` no banco de produção.** Ele se recusa quando
+  `NODE_ENV` ou `VERCEL_ENV` é `production`, mas não tem como saber para onde o
+  `DATABASE_URL` aponta. As contas demo usam senha aleatória a cada execução.
+
 ## Limitações conhecidas
 
 Estão documentadas de propósito, não são descuido:

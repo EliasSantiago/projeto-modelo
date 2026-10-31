@@ -126,9 +126,11 @@ O starter já inclui o fluxo completo com design split-screen:
 - `/verify-email?token=...`, confirmar e-mail (e pedir novo link)
 - `/dashboard`, área privada com métricas e a feature `tasks`
 
-Após rodar `pnpm db:seed`, use as credenciais de demonstração:
-**`demo@example.com`** / **`password123`** (papel `user`) ou
-**`admin@example.com`** / **`password123`** (papel `admin`, acessa `/admin`).
+Após rodar `pnpm db:seed`, entre com **`demo@example.com`** (papel `user`) ou
+**`admin@example.com`** (papel `admin`, acessa `/admin`). A senha é gerada
+aleatoriamente a cada execução e aparece no terminal: o repositório é público,
+e senha fixa no código viraria credencial conhecida. O seed se recusa a rodar
+em produção.
 
 ## 🔧 Como configurar o `.env`
 
