@@ -106,7 +106,9 @@ Estão documentadas de propósito, não são descuido:
   origens contra a mesma conta. O IP vem de `x-real-ip` e, na falta dele, do
   primeiro item do `x-forwarded-for`, que só é confiável quando o proxy da
   borda sobrescreve o header (a Vercel faz isso). Fora da Vercel, configure o
-  proxy para definir `x-real-ip`.
+  proxy para definir `x-real-ip`. O limite roda no `authorize` do provider
+  Credentials (`lib/auth-credentials.ts`), não na Server Action: o Auth.js
+  também expõe essa função em `POST /api/auth/callback/credentials`.
 - **`emailVerified` em cache no JWT**, pela mesma razão. Quem confirma o
   e-mail durante uma sessão ativa só vê a mudança refletida no próximo login
   — é o que a tela de confirmação pede. Se a sua app impuser

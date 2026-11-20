@@ -4,6 +4,7 @@ import { AuthError } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { enabledProviders, signIn, signOut } from '@/lib/auth'
+import { LoginRateLimitedError } from '@/lib/auth-credentials'
 import {
   authService,
   EmailInUseError,
@@ -39,10 +40,8 @@ export async function loginAction(
   const parsed = loginSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error) }
 
-  // Chave por IP + e-mail: um atacante num só IP não trava o login alheio.
-  const limit = await checkRateLimit('login', parsed.data.email)
-  if (!limit.success) return { error: rateLimitMessage(limit.retryAfter) }
-
+  // O limite de tentativas roda dentro do `authorize` (lib/auth-credentials),
+  // que é a fronteira comum a esta action e ao callback do Auth.js.
   try {
     await signIn('credentials', {
       email: parsed.data.email,
@@ -50,6 +49,9 @@ export async function loginAction(
       redirectTo: ROUTES.dashboard,
     })
   } catch (error) {
+    if (error instanceof LoginRateLimitedError) {
+      return { error: rateLimitMessage(error.retryAfter) }
+    }
     if (error instanceof AuthError) {
       return { error: 'E-mail ou senha inválidos' }
     }

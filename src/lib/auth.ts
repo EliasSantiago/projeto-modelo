@@ -12,7 +12,7 @@ import {
   type UserRole,
 } from '@/db/schema'
 import { authService } from '@/services/auth.service'
-import { loginSchema } from '@/schemas/auth.schema'
+import { authorizeCredentials, oauthProvesEmail } from '@/lib/auth-credentials'
 import { serverEnv } from '@/lib/env.server'
 import { ROUTES } from '@/constants/routes'
 import { sessionCookieName } from '@/constants/auth'
@@ -28,14 +28,9 @@ const providers: NextAuthConfig['providers'] = [
       email: { label: 'E-mail', type: 'email' },
       password: { label: 'Senha', type: 'password' },
     },
-    async authorize(credentials) {
-      const parsed = loginSchema.safeParse(credentials)
-      if (!parsed.success) return null
-      return authService.verifyCredentials(
-        parsed.data.email,
-        parsed.data.password,
-      )
-    },
+    // Com rate limit: esta função também responde em
+    // POST /api/auth/callback/credentials, fora da Server Action.
+    authorize: authorizeCredentials,
   }),
 ]
 
@@ -86,9 +81,14 @@ export const authConfig = {
      * Conta criada por provedor social já nasce verificada: Google e GitHub
      * só expõem endereço que eles mesmos confirmaram, então pedir nova
      * confirmação seria atrito sem ganho (RF-12).
+     *
+     * Só vale quando o e-mail do perfil é o da conta: vincular um provedor
+     * estando logado não prova a posse do e-mail local (`oauthProvesEmail`).
      */
-    async linkAccount({ user }) {
-      if (user.id) await authService.markEmailVerified(user.id)
+    async linkAccount({ user, profile }) {
+      if (user.id && oauthProvesEmail(user.email, profile?.email)) {
+        await authService.markEmailVerified(user.id)
+      }
     },
   },
   callbacks: {
