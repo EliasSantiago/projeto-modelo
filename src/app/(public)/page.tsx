@@ -48,14 +48,14 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative">
         <div className="mx-auto max-w-5xl px-4 pt-20 pb-16 text-center">
-          <h1 className="text-navy-700 text-5xl font-bold tracking-tight text-balance sm:text-6xl dark:text-white">
+          <h1 className="text-ink text-5xl font-semibold tracking-tight text-balance sm:text-6xl">
             Construa produtos rápido, com{' '}
-            <span className="from-navy-600 to-navy-400 dark:to-navy-200 bg-gradient-to-r bg-clip-text text-transparent dark:from-white">
+            <span className="from-ink to-ink-3 bg-gradient-to-r bg-clip-text text-transparent">
               segurança e escala
             </span>
           </h1>
 
-          <p className="text-navy-400 mx-auto mt-5 max-w-2xl text-lg text-pretty">
+          <p className="text-ink-3 mx-auto mt-5 max-w-2xl text-lg text-pretty">
             {APP.description} Autenticação, banco, camadas, UI e telas prontas,
             do primeiro commit ao deploy.
           </p>
@@ -76,7 +76,7 @@ export default function HomePage() {
             {techBadges.map((tech) => (
               <span
                 key={tech}
-                className="bg-light-primary text-navy-500 dark:bg-navy-800 dark:text-navy-100 rounded-lg px-3 py-1 text-xs font-medium"
+                className="bg-surface-3 text-ink-2 rounded-lg px-3 py-1 text-xs font-medium"
               >
                 {tech}
               </span>
@@ -90,13 +90,11 @@ export default function HomePage() {
         <div className="grid gap-6 sm:grid-cols-3">
           {features.map(({ icon: Icon, title, description }) => (
             <Card key={title} className="p-6">
-              <div className="bg-light-primary text-brand-500 dark:bg-navy-700 flex size-12 items-center justify-center rounded-2xl dark:text-white">
+              <div className="bg-surface-3 text-accent flex size-12 items-center justify-center rounded-2xl">
                 <Icon className="size-6" aria-hidden />
               </div>
-              <h3 className="text-navy-700 mt-4 font-bold dark:text-white">
-                {title}
-              </h3>
-              <p className="text-navy-400 mt-1 text-sm">{description}</p>
+              <h3 className="text-ink mt-4 font-semibold">{title}</h3>
+              <p className="text-ink-3 mt-1 text-sm">{description}</p>
             </Card>
           ))}
         </div>
@@ -106,10 +104,10 @@ export default function HomePage() {
       <section className="mx-auto max-w-5xl px-4 pb-20">
         <div className="mb-6 flex items-end justify-between">
           <div>
-            <h2 className="text-navy-700 text-2xl font-bold dark:text-white">
+            <h2 className="text-ink text-2xl font-semibold">
               Explore as páginas
             </h2>
-            <p className="text-navy-400 mt-1">
+            <p className="text-ink-3 mt-1">
               Telas prontas para usar. Veja todas na documentação.
             </p>
           </div>
@@ -129,29 +127,27 @@ export default function HomePage() {
 
       {/* CTA final */}
       <section className="mx-auto max-w-5xl px-4 pb-24">
-        <div className="from-brand-500 to-brand-700 relative overflow-hidden rounded-[28px] bg-gradient-to-br px-8 py-14 text-center text-white">
+        <div className="surface-graphite relative overflow-hidden rounded-[var(--radius-xl)] px-8 py-14 text-center">
           <div
             className="absolute -top-20 -right-16 size-64 rounded-full bg-white/10 blur-2xl"
             aria-hidden
           />
-          <h2 className="relative text-3xl font-bold">Pronto para começar?</h2>
-          <p className="relative mx-auto mt-2 max-w-lg text-white/80">
+          <h2 className="relative text-3xl font-semibold">
+            Pronto para começar?
+          </h2>
+          <p className="text-ink-2 relative mx-auto mt-2 max-w-lg">
             Crie sua conta e explore o dashboard, ou leia a documentação para
             rodar localmente.
           </p>
           <div className="relative mt-6 flex flex-wrap justify-center gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="text-brand-600 bg-white hover:bg-white/90"
-            >
+            <Button asChild size="lg">
               <Link href={ROUTES.register}>Criar conta grátis</Link>
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="border-white/40 bg-transparent text-white hover:bg-white/10"
+              className="border-line-strong text-ink hover:bg-surface-3 bg-transparent"
             >
               <Link href={ROUTES.docs}>Ler a documentação</Link>
             </Button>

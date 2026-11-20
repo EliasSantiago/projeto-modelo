@@ -28,7 +28,7 @@ test('a tela de login renderiza o formulário de e-mail e senha', async ({
 }) => {
   await page.goto('/login')
   await expect(page.getByLabel(/e-?mail/i)).toBeVisible()
-  await expect(page.getByLabel(/senha/i)).toBeVisible()
+  await expect(page.getByLabel(/^senha/i)).toBeVisible()
 })
 
 test('cookie de sessão falsificado não dá acesso à área restrita', async ({

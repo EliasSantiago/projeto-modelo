@@ -21,7 +21,7 @@ async function ResetNotice({
   const { reset } = await searchParams
   if (reset !== 'success') return null
   return (
-    <p className="mb-6 rounded-xl bg-green-50 p-3 text-sm text-green-700 dark:bg-green-500/10 dark:text-green-400">
+    <p className="bg-success-soft text-success mb-6 rounded-[var(--radius-sm)] p-3 text-sm">
       Senha redefinida com sucesso. Faça login com a nova senha.
     </p>
   )
@@ -38,10 +38,10 @@ export default function LoginPage({
         <RedirectIfAuthed />
       </Suspense>
 
-      <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+      <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
         Entrar
       </h1>
-      <p className="text-navy-200 mt-2 mb-8">
+      <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
         Informe seu e-mail e senha para acessar.
       </p>
 

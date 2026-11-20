@@ -35,7 +35,7 @@ export function TaskStatsSkeleton() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="h-[88px] animate-pulse rounded-[20px] bg-[var(--color-muted)]"
+          className="bg-surface-3 h-[88px] animate-pulse rounded-[var(--radius-lg)]"
         />
       ))}
     </div>

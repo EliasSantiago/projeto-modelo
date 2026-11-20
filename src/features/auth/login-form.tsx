@@ -17,7 +17,7 @@ export function LoginForm() {
     <form action={formAction} noValidate>
       {state?.error && (
         <p
-          className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-600 dark:bg-red-500/10"
+          className="bg-danger-soft text-danger mb-4 rounded-[var(--radius-sm)] p-3 text-sm"
           role="alert"
         >
           {state.error}
@@ -45,7 +45,7 @@ export function LoginForm() {
       <div className="mb-4 flex justify-end">
         <Link
           href={ROUTES.forgotPassword}
-          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 text-sm font-medium dark:hover:text-white"
+          className="text-ink-2 hover:text-ink text-[13px] font-medium underline-offset-4 hover:underline"
         >
           Esqueceu a senha?
         </Link>
@@ -55,11 +55,11 @@ export function LoginForm() {
         Entrar
       </SubmitButton>
 
-      <p className="text-navy-200 mt-6 text-center text-sm">
+      <p className="text-ink-3 mt-6 text-center text-sm">
         Ainda não tem conta?{' '}
         <Link
           href={ROUTES.register}
-          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+          className="text-ink font-medium underline-offset-4 hover:underline"
         >
           Criar conta
         </Link>

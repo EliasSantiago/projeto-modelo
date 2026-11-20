@@ -93,10 +93,7 @@ export function AreaChart({
   return (
     <div
       ref={ref}
-      className={cn(
-        'text-brand-500 relative w-full select-none dark:text-white',
-        className,
-      )}
+      className={cn('text-chart relative w-full select-none', className)}
       style={{ height }}
     >
       {width > 0 && (
@@ -200,13 +197,13 @@ export function AreaChart({
 
       {/* Rótulos do eixo X */}
       {labels && width > 0 && (
-        <div className="text-navy-400 pointer-events-none absolute right-0 bottom-0 left-0 flex justify-between px-[14px] text-[11px]">
+        <div className="text-ink-3 pointer-events-none absolute right-0 bottom-0 left-0 flex justify-between px-[14px] text-[11px]">
           {labels.map((label, i) => (
             <span
               key={i}
               className={cn(
                 'transition-colors',
-                active === i && 'text-brand-500 font-semibold dark:text-white',
+                active === i && 'text-chart font-semibold',
               )}
             >
               {label}
@@ -223,15 +220,15 @@ export function AreaChart({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-1.5 shadow-lg"
+            className="border-line bg-surface shadow-pop pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-[var(--radius-sm)] border px-3 py-1.5"
             style={{ left: activePoint[0], top: activePoint[1] - 12 }}
           >
             {labels?.[active] && (
-              <p className="text-navy-400 text-[11px] leading-none">
+              <p className="text-ink-3 text-[11px] leading-none">
                 {labels[active]}
               </p>
             )}
-            <p className="text-navy-700 mt-1 text-sm font-bold dark:text-white">
+            <p className="text-ink mt-1 text-sm font-semibold">
               {`${prefix}${data[active]}${suffix}`}
             </p>
           </motion.div>

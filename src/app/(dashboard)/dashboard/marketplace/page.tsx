@@ -11,26 +11,22 @@ export default function MarketplacePage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Banner */}
-      <div className="from-brand-400 to-brand-600 relative overflow-hidden rounded-[24px] bg-gradient-to-br p-10 text-white">
+      <div className="surface-graphite relative overflow-hidden rounded-[var(--radius-lg)] p-10">
         <div className="absolute -top-16 -right-10 size-56 rounded-full bg-white/10 blur-2xl" />
         <div className="relative max-w-lg">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-semibold">
             Descubra, colecione e venda NFTs
           </h1>
-          <p className="mt-2 text-white/80">
+          <p className="text-ink-2 mt-2">
             Marketplace boilerplate, grade de cards pronta para receber seus
             dados reais.
           </p>
-          <Button className="text-brand-600 mt-6 bg-white hover:bg-white/90">
-            Explorar
-          </Button>
+          <Button className="mt-6">Explorar</Button>
         </div>
       </div>
 
       <div>
-        <h2 className="text-navy-700 mb-4 text-xl font-bold dark:text-white">
-          Em destaque
-        </h2>
+        <h2 className="text-ink mb-4 text-xl font-semibold">Em destaque</h2>
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {nftItems.map((item) => (
             <Card key={item.id} className="flex flex-col gap-4 p-4">
@@ -42,7 +38,7 @@ export default function MarketplacePage() {
               >
                 <button
                   aria-label="Favoritar"
-                  className="flex size-9 items-center justify-center rounded-full bg-white/30 text-white backdrop-blur"
+                  className="flex size-9 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur"
                 >
                   <HeartIcon className="size-5" />
                 </button>
@@ -50,12 +46,10 @@ export default function MarketplacePage() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-navy-700 font-bold dark:text-white">
-                    {item.title}
-                  </p>
-                  <p className="text-navy-400 text-sm">por {item.author}</p>
+                  <p className="text-ink font-semibold">{item.title}</p>
+                  <p className="text-ink-3 text-sm">por {item.author}</p>
                 </div>
-                <p className="text-brand-500 dark:text-brand-400 text-sm font-bold">
+                <p className="text-accent text-sm font-semibold">
                   {item.price}
                 </p>
               </div>

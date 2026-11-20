@@ -24,7 +24,7 @@ async function AdminContent() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold">Administração</h1>
+      <h1 className="text-3xl font-semibold">Administração</h1>
       <p className="text-[var(--color-muted-foreground)]">
         Área restrita ao papel <code>admin</code>. Você está autenticado como{' '}
         <strong>{user.email}</strong>.

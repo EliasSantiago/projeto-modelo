@@ -1,4 +1,8 @@
-import type { ComponentProps } from 'react'
+'use client'
+
+import { useState, type ComponentProps } from 'react'
+import { fieldClass } from '@/components/ui/input'
+import { RevealButton } from '@/components/ui/password-input'
 import { cn } from '@/lib/utils'
 
 type AuthInputProps = ComponentProps<'input'> & {
@@ -6,39 +10,48 @@ type AuthInputProps = ComponentProps<'input'> & {
   error?: string
 }
 
-/** Campo de formulário: label acima + input arredondado (rounded-xl). */
+/**
+ * Campo das telas de autenticação: rótulo acima + input.
+ * `type="password"` ganha o olho para mostrar a senha digitada.
+ */
 export function AuthInput({
   label,
   error,
   id,
   name,
   className,
+  type,
   ...props
 }: AuthInputProps) {
   const inputId = id ?? name
+  const errorId = error ? `${inputId}-erro` : undefined
+  const isPassword = type === 'password'
+  const [shown, setShown] = useState(false)
   return (
-    <div className="mb-4">
-      <label
-        htmlFor={inputId}
-        className="text-navy-700 ml-1.5 text-sm font-medium dark:text-white"
-      >
+    <div className="mb-4 flex flex-col gap-1.5">
+      <label htmlFor={inputId} className="text-ink-2 text-[13px] font-medium">
         {label}
       </label>
-      <input
-        id={inputId}
-        name={name}
-        aria-invalid={Boolean(error)}
-        className={cn(
-          'placeholder:text-navy-200 mt-2 flex h-12 w-full items-center rounded-xl border bg-white/0 p-3 text-sm outline-none dark:text-white',
-          error
-            ? 'border-red-500 text-red-500 placeholder:text-red-400'
-            : 'focus:border-brand-400 border-[var(--color-input)] dark:border-white/10',
-          className,
+      <div className="relative">
+        <input
+          id={inputId}
+          name={name}
+          type={isPassword && shown ? 'text' : type}
+          aria-invalid={Boolean(error)}
+          aria-describedby={errorId}
+          className={cn(fieldClass, 'h-11', isPassword && 'pr-11', className)}
+          {...props}
+        />
+        {isPassword && (
+          <RevealButton
+            shown={shown}
+            onToggle={() => setShown((s) => !s)}
+            className="absolute top-1/2 right-2 size-8 -translate-y-1/2"
+          />
         )}
-        {...props}
-      />
+      </div>
       {error && (
-        <p className="mt-1 ml-1.5 text-xs text-red-500" role="alert">
+        <p id={errorId} className="text-danger text-xs" role="alert">
           {error}
         </p>
       )}

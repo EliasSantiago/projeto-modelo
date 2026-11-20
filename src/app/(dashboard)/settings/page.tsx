@@ -22,12 +22,8 @@ const preferenceRows: Row[] = [
 function SettingsRow({ label, value, control }: Row) {
   return (
     <div className="flex min-h-10 items-center justify-between border-b border-[var(--color-border)] pb-3 last:border-0 last:pb-0">
-      <span className="text-navy-400 text-sm">{label}</span>
-      {control ?? (
-        <span className="text-navy-700 text-sm font-medium dark:text-white">
-          {value}
-        </span>
-      )}
+      <span className="text-ink-3 text-sm">{label}</span>
+      {control ?? <span className="text-ink text-sm font-medium">{value}</span>}
     </div>
   )
 }
@@ -62,7 +58,7 @@ export default function SettingsPage() {
           <CardTitle>Sobre</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-navy-500 dark:text-navy-100 text-sm">
+          <p className="text-ink-2 text-sm">
             Página de configurações boilerplate. Os campos são ilustrativos e
             podem ser ligados aos seus dados e Server Actions quando a feature
             de configurações for implementada.

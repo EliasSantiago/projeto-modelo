@@ -22,12 +22,12 @@ export function AdminShell({
   const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <div className="bg-light-primary dark:bg-navy-900 min-h-dvh">
+    <div className="bg-bg min-h-dvh">
       {/* Sidebar fixa em telas grandes (largura anima ao recolher) */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-40 hidden border-r border-[var(--color-border)] transition-[width] duration-300 ease-in-out lg:block',
-          collapsed ? 'w-20' : 'w-72',
+          'fixed inset-y-0 left-0 z-40 hidden transition-[width] duration-200 ease-out motion-reduce:transition-none lg:block',
+          collapsed ? 'w-16' : 'w-64',
         )}
       >
         <Sidebar
@@ -42,11 +42,11 @@ export function AdminShell({
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute inset-y-0 left-0 w-72 shadow-xl">
+          <div className="shadow-pop absolute inset-y-0 left-0 w-72">
             <Sidebar user={user} onNavigate={() => setOpen(false)} />
           </div>
         </div>
@@ -55,12 +55,12 @@ export function AdminShell({
       {/* Conteúdo (margem acompanha a largura da sidebar) */}
       <div
         className={cn(
-          'flex min-h-dvh flex-col transition-[margin] duration-300 ease-in-out',
-          collapsed ? 'lg:ml-20' : 'lg:ml-72',
+          'flex min-h-dvh flex-col transition-[padding] duration-200 ease-out motion-reduce:transition-none',
+          collapsed ? 'lg:pl-16' : 'lg:pl-64',
         )}
       >
         <Navbar user={user} onMenuClick={() => setOpen(true)} />
-        <main id="conteudo" className="flex-1 px-4 py-6">
+        <main id="conteudo" className="flex-1 px-4 pt-2 pb-6 lg:px-6">
           {children}
         </main>
       </div>

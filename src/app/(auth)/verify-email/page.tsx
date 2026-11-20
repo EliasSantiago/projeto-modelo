@@ -19,16 +19,16 @@ export const metadata: Metadata = {
 function Success() {
   return (
     <>
-      <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+      <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
         E-mail confirmado
       </h1>
-      <p className="text-navy-200 mt-2 mb-8">
+      <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
         Seu endereço foi confirmado com sucesso. Entre novamente para que a
         mudança apareça na sua sessão.
       </p>
       <Link
         href={ROUTES.login}
-        className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+        className="text-ink block text-center text-sm font-medium underline-offset-4 hover:underline"
       >
         Ir para o login
       </Link>
@@ -52,15 +52,15 @@ async function VerifyContent({
     if (user?.emailVerified) {
       return (
         <>
-          <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+          <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
             Tudo certo
           </h1>
-          <p className="text-navy-200 mt-2 mb-8">
+          <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
             Seu e-mail já está confirmado.
           </p>
           <Link
             href={ROUTES.dashboard}
-            className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+            className="text-ink block text-center text-sm font-medium underline-offset-4 hover:underline"
           >
             Ir para o painel
           </Link>
@@ -70,10 +70,10 @@ async function VerifyContent({
 
     return (
       <>
-        <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+        <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
           Confirme seu e-mail
         </h1>
-        <p className="text-navy-200 mt-2 mb-8">
+        <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
           Enviamos um link de confirmação para o seu endereço. Não recebeu?
           Pedimos outro.
         </p>
@@ -107,10 +107,10 @@ async function VerifyContent({
 
   return (
     <>
-      <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+      <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
         Link inválido ou expirado
       </h1>
-      <p className="text-navy-200 mt-2 mb-8">
+      <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
         Este link não vale mais. Ele expira em 24 horas e só pode ser usado uma
         vez. Peça um novo abaixo.
       </p>

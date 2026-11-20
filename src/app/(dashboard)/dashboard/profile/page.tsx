@@ -27,23 +27,21 @@ export default async function ProfilePage() {
     <div className="flex flex-col gap-5">
       {/* Cabeçalho do perfil */}
       <Card className="overflow-hidden">
-        <div className="from-brand-400 to-brand-600 h-40 bg-gradient-to-br" />
+        <div className="surface-graphite h-40" />
         <div className="-mt-12 flex flex-col items-center pb-6">
-          <div className="from-brand-500 to-navy-700 flex size-24 items-center justify-center rounded-full border-4 border-[var(--color-card)] bg-gradient-to-br text-2xl font-bold text-white">
+          <div className="bg-accent-soft text-accent-soft-ink border-surface flex size-24 items-center justify-center rounded-full border-4 text-2xl font-semibold">
             {initials}
           </div>
-          <h1 className="text-navy-700 mt-3 text-xl font-bold dark:text-white">
-            {displayName}
-          </h1>
-          <p className="text-navy-400 text-sm">{email}</p>
+          <h1 className="text-ink mt-3 text-xl font-semibold">{displayName}</h1>
+          <p className="text-ink-3 text-sm">{email}</p>
 
           <div className="mt-6 flex gap-10">
             {stats.map((s) => (
               <div key={s.label} className="flex flex-col items-center">
-                <span className="text-navy-700 text-2xl font-bold dark:text-white">
+                <span className="text-ink text-2xl font-semibold">
                   {s.value}
                 </span>
-                <span className="text-navy-400 text-sm">{s.label}</span>
+                <span className="text-ink-3 text-sm">{s.label}</span>
               </div>
             ))}
           </div>
@@ -57,14 +55,9 @@ export default async function ProfilePage() {
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             {generalInfo.map((info) => (
-              <div
-                key={info.label}
-                className="bg-light-primary dark:bg-navy-700 rounded-xl p-4"
-              >
-                <p className="text-navy-400 text-xs">{info.label}</p>
-                <p className="text-navy-700 font-medium dark:text-white">
-                  {info.value}
-                </p>
+              <div key={info.label} className="bg-surface-3 rounded-xl p-4">
+                <p className="text-ink-3 text-xs">{info.label}</p>
+                <p className="text-ink font-medium">{info.value}</p>
               </div>
             ))}
           </CardContent>
@@ -75,7 +68,7 @@ export default async function ProfilePage() {
             <CardTitle>Sobre</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-navy-500 dark:text-navy-100 text-sm">
+            <p className="text-ink-2 text-sm">
               Esta é uma página de perfil boilerplate. Os dados de nome e e-mail
               vêm da sessão real do Auth.js; os demais campos são fictícios e
               podem ser ligados aos seus dados quando a feature de perfil for

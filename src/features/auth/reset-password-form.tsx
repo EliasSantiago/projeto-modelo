@@ -19,7 +19,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
       {state?.error && (
         <p
-          className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-600 dark:bg-red-500/10"
+          className="bg-danger-soft text-danger mb-4 rounded-[var(--radius-sm)] p-3 text-sm"
           role="alert"
         >
           {state.error}
@@ -48,10 +48,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
         Redefinir senha
       </SubmitButton>
 
-      <p className="text-navy-200 mt-6 text-center text-sm">
+      <p className="text-ink-3 mt-6 text-center text-sm">
         <Link
           href={ROUTES.login}
-          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+          className="text-ink font-medium underline-offset-4 hover:underline"
         >
           Voltar ao login
         </Link>

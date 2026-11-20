@@ -1,107 +1,359 @@
 @import 'tailwindcss';
 
-/* Tailwind v4 CSS-first config. Dark mode dirigido pela classe `.dark`
-   aplicada pelo next-themes. */
+/*
+  Tokens de tema (paleta Grafite, a mesma linguagem visual do Águia CRM).
+
+  Modo claro/escuro pela classe `.dark` aplicada pelo next-themes.
+  Tudo na UI consome os tokens semânticos abaixo (--bg, --surface, --ink,
+  --accent…). Componente não referencia hex direto.
+*/
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* --- Grafite: claro ------------------------------------------------------ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --primary: #27272a;
-  --primary-foreground: #fafafa;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #27272a;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #27272a;
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: #e4e4e7;
-  --input: #d4d4d8;
-  --ring: #27272a;
+  --bg: #f4f4f0;
+  --surface: #ffffff;
+  --surface-2: #f9f9f6;
+  --surface-3: #ecece6;
+  --ink: #17181c;
+  --ink-2: #4a4d55;
+  --ink-3: #70737b;
+  --line: #e5e5df;
+  --line-strong: #d3d3cb;
+  --accent: #3a3d44;
+  --chart: #4a4e57;
+  --accent-hover: #2a2d32;
+  --accent-ink: #ffffff;
+  --accent-soft: #e8e8e4;
+  --accent-soft-ink: #33363c;
+  --focus: #4a4e57;
+
+  --rail: #e8e8e2;
+  --rail-2: #efefe9;
+  --rail-ink: #17181c;
+  --rail-ink-2: #565a62;
+  --rail-accent: #3a3d44;
+  --rail-accent-ink: #ffffff;
+  --rail-active: #17181c;
+  --rail-active-ink: #ffffff;
+  --rail-hover: #ffffff;
+  --rail-hover-shadow:
+    0 1px 2px rgb(23 24 28 / 0.06), 0 6px 14px -8px rgb(23 24 28 / 0.22);
+  --rail-line: rgb(23 24 28 / 0.08);
+
+  --success: #1f8a5b;
+  --success-soft: #e3f4ec;
+  --warning: #b86e00;
+  --warning-soft: #fdf0dc;
+  --danger: #c2372f;
+  --danger-soft: #fbe6e4;
+  --info: #2563c9;
+  --info-soft: #e5eefc;
+
+  --shadow-pop:
+    0 12px 32px -12px rgb(23 24 28 / 0.25), 0 2px 6px -2px rgb(23 24 28 / 0.08);
+
+  --graphite-from: #363940;
+  --graphite-via: #212328;
+  --graphite-to: #131418;
+  --graphite-raised: #2b2d33;
+  --graphite-accent: #c9ccd4;
+
+  --highlight-from: #ffffff;
+  --highlight-via: #f4f4f1;
+  --highlight-to: #e6e6e2;
+
+  /* Botão principal em degradê grafite. */
+  --accent-fill: linear-gradient(135deg, #565b63 0%, #3e4248 45%, #2a2d32 100%);
+  --accent-fill-hover: linear-gradient(
+    135deg,
+    #646972 0%,
+    #4a4e55 45%,
+    #35383e 100%
+  );
+  --accent-fill-ink: #f6f7f8;
+
+  /* Fundo dos cartões comuns: liso no claro, degradê discreto no escuro. */
+  --card-fill: var(--surface);
+}
+
+/* --- Grafite: escuro ----------------------------------------------------- */
+.dark {
+  --bg: #121317;
+  --surface: #1a1c21;
+  --surface-2: #1f2127;
+  --surface-3: #272a31;
+  --ink: #eeeff2;
+  --ink-2: #b6b9c1;
+  --ink-3: #868a94;
+  --line: #2a2d34;
+  --line-strong: #3a3e47;
+  --accent: #c9ccd4;
+  --chart: #8f939d;
+  --accent-hover: #dfe1e6;
+  --accent-ink: #17181c;
+  --accent-soft: #2a2c32;
+  --accent-soft-ink: #d7d9df;
+  --focus: #c9ccd4;
+
+  --rail: #0d0e11;
+  --rail-2: #1a1c21;
+  --rail-ink: #eeeff2;
+  --rail-ink-2: #868a94;
+  --rail-accent: #c9ccd4;
+  --rail-accent-ink: #17181c;
+  --rail-active: #3a3d45;
+  --rail-active-ink: #f4f5f7;
+  --rail-hover: rgb(255 255 255 / 0.08);
+  --rail-hover-shadow: none;
+  --rail-line: rgb(255 255 255 / 0.07);
+
+  --success: #3fbf86;
+  --success-soft: #16291f;
+  --warning: #e09a3a;
+  --warning-soft: #2d2213;
+  --danger: #ef6b62;
+  --danger-soft: #331a18;
+  --info: #6c9bf0;
+  --info-soft: #172338;
+
+  --shadow-pop:
+    0 16px 40px -12px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.4);
+
+  --graphite-from: #30333a;
+  --graphite-via: #1f2126;
+  --graphite-to: #0f1013;
+  --graphite-raised: #2b2d33;
+
+  /* mais claro: o degradê do modo claro sumiria no fundo escuro */
+  --accent-fill: linear-gradient(135deg, #6d727b 0%, #555960 45%, #41444a 100%);
+  --accent-fill-hover: linear-gradient(
+    135deg,
+    #727680 0%,
+    #5e6169 45%,
+    #494c52 100%
+  );
+  --accent-fill-ink: #ffffff;
+
+  --card-fill: linear-gradient(
+    155deg,
+    color-mix(in oklab, var(--surface-3) 75%, var(--surface)),
+    var(--surface) 62%
+  );
+}
+
+/* Aliases no vocabulário shadcn (componentes de terceiros, `var(--…)`). */
+:root,
+.dark {
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-ink);
+  --secondary: var(--surface-3);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-3);
+  --muted-foreground: var(--ink-3);
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--focus);
   --radius: 0.75rem;
 }
 
-.dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #18181b;
-  --card-foreground: #fafafa;
-  --primary: #e4e4e7;
-  --primary-foreground: #18181b;
-  --secondary: #27272a;
-  --secondary-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --accent-foreground: #fafafa;
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.14);
-  --ring: #d4d4d8;
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-chart: var(--chart);
+  --color-chart-soft: color-mix(in oklab, var(--chart) 32%, var(--surface));
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-ink: var(--accent-soft-ink);
+  --color-rail: var(--rail);
+  --color-rail-2: var(--rail-2);
+  --color-rail-ink: var(--rail-ink);
+  --color-rail-ink-2: var(--rail-ink-2);
+  --color-rail-accent: var(--rail-accent);
+  --color-rail-accent-ink: var(--rail-accent-ink);
+  --color-rail-active: var(--rail-active);
+  --color-rail-active-ink: var(--rail-active-ink);
+  --color-rail-hover: var(--rail-hover);
+  --color-rail-line: var(--rail-line);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  /* Vocabulário shadcn */
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-ink);
+  --color-secondary: var(--surface-3);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface-3);
+  --color-muted-foreground: var(--ink-3);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--line);
+  --color-input: var(--line-strong);
+  --color-ring: var(--focus);
+
+  /* Compatibilidade: escalas antigas (navy/brand) resolvem para os tokens. */
+  --color-navy-50: var(--ink);
+  --color-navy-100: var(--ink-2);
+  --color-navy-200: var(--ink-3);
+  --color-navy-300: var(--ink-3);
+  --color-navy-400: var(--ink-3);
+  --color-navy-500: var(--ink-2);
+  --color-navy-600: var(--ink-2);
+  --color-navy-700: var(--ink);
+  --color-navy-800: var(--surface);
+  --color-navy-900: var(--bg);
+  --color-brand-50: var(--accent-soft);
+  --color-brand-100: var(--accent-soft);
+  --color-brand-200: var(--accent-soft);
+  --color-brand-300: var(--accent-hover);
+  --color-brand-400: var(--accent);
+  --color-brand-500: var(--accent);
+  --color-brand-600: var(--accent-hover);
+  --color-brand-700: var(--accent-hover);
+  --color-brand-800: var(--graphite-via);
+  --color-brand-900: var(--graphite-to);
+  --color-light-primary: var(--surface-3);
+
+  /* Escala concêntrica: um filho com 8px de respiro usa o degrau abaixo do
+     pai (cartão 24 → item 16; menu 16 + 4px → opção 12). */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
+  --radius-2xl: 32px;
+  --shadow-pop: var(--shadow-pop);
+  --font-sans: var(--font-app), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-in: app-in 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+/*
+  Cartão grafite em degradê. Além do fundo, redefine os tokens no próprio
+  escopo: o que estiver dentro (texto, Button, gráficos) se adapta sozinho ao
+  fundo escuro, sem classe especial.
+*/
+@utility surface-graphite {
+  --accent-fill: initial;
+  --accent-fill-hover: initial;
+  --accent-fill-ink: initial;
+  --bg: var(--graphite-to);
+  --surface: var(--graphite-raised);
+  --surface-2: color-mix(in oklab, var(--graphite-raised) 90%, white);
+  --surface-3: rgb(255 255 255 / 0.1);
+  --card-fill: rgb(255 255 255 / 0.05);
+  --ink: #f4f5f7;
+  --ink-2: #c8cbd2;
+  --ink-3: #a6aab4;
+  --line: rgb(255 255 255 / 0.1);
+  --line-strong: rgb(255 255 255 / 0.2);
+  --accent: var(--graphite-accent);
+  --chart: var(--graphite-accent);
+  --focus: var(--graphite-accent);
+  --accent-hover: color-mix(in oklab, var(--graphite-accent) 85%, white);
+  --accent-ink: var(--graphite-to);
+  --accent-soft: color-mix(in oklab, var(--graphite-accent) 20%, transparent);
+  --accent-soft-ink: color-mix(in oklab, var(--graphite-accent) 70%, white);
+  color: var(--ink);
+  background: linear-gradient(
+    150deg,
+    var(--graphite-from),
+    var(--graphite-via) 48%,
+    var(--graphite-to)
+  );
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
 
-  /* Paleta grafite: acento cinza-escuro (brand) + neutros (navy). */
-  --color-brand-50: #fafafa;
-  --color-brand-100: #f4f4f5;
-  --color-brand-200: #e4e4e7;
-  --color-brand-300: #d4d4d8;
-  --color-brand-400: #52525b;
-  --color-brand-500: #27272a;
-  --color-brand-600: #1f1f22;
-  --color-brand-700: #18181b;
-  --color-brand-800: #111113;
-  --color-brand-900: #09090b;
+/* Cartão de destaque no claro; use junto de `dark:surface-graphite`. */
+@utility surface-highlight {
+  background: linear-gradient(
+    150deg,
+    var(--highlight-from),
+    var(--highlight-via) 55%,
+    var(--highlight-to)
+  );
+}
 
-  --color-navy-50: #fafafa;
-  --color-navy-100: #d4d4d8;
-  --color-navy-200: #a1a1aa;
-  --color-navy-300: #71717a;
-  --color-navy-400: #71717a;
-  --color-navy-500: #52525b;
-  --color-navy-600: #3f3f46;
-  --color-navy-700: #27272a;
-  --color-navy-800: #18181b;
-  --color-navy-900: #09090b;
+/* Botão principal: degradê grafite (ou o acento liso dentro do grafite). */
+@utility btn-primary {
+  color: var(--accent-fill-ink, var(--accent-ink));
+  background: var(--accent-fill, var(--accent));
+  &:hover {
+    background: var(--accent-fill-hover, var(--accent-hover));
+  }
+}
 
-  --color-light-primary: #f4f4f5;
+/* Cartão comum (ver --card-fill). */
+@utility surface-card {
+  background: var(--card-fill);
+}
+
+/* Menu lateral: cinza claro no modo claro, escuro no modo escuro. */
+@utility surface-rail {
+  background: linear-gradient(175deg, var(--rail-2), var(--rail));
+}
+
+@keyframes app-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.985);
+  }
 }
 
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--line);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
   }
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--bg);
+    color: var(--ink);
     font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 30%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* O olho de mostrar senha é nosso (RevealButton); some com o nativo do
+     Edge para não aparecerem dois. */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
   }
 
   /* Tailwind v4 zera o cursor de botões/[role=button]; restauramos a mãozinha
@@ -118,4 +370,19 @@
   [role='button'][aria-disabled='true'] {
     cursor: not-allowed;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      transition-duration: 1ms !important;
+    }
+  }
+}
+
+/* Barra de rolagem discreta nas áreas densas. */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
 }

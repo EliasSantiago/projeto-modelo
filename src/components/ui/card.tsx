@@ -1,11 +1,18 @@
 import type { ComponentProps } from 'react'
 import { cn } from '@/lib/utils'
 
-export function Card({ className, ...props }: ComponentProps<'div'>) {
+export function Card({
+  className,
+  variant = 'default',
+  ...props
+}: ComponentProps<'div'> & { variant?: 'default' | 'highlight' }) {
   return (
     <div
       className={cn(
-        'rounded-[20px] border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-card-foreground)] shadow-[0_18px_40px_rgba(112,144,176,0.12)] dark:border-white/10 dark:shadow-none',
+        'border-line text-ink rounded-[var(--radius-lg)] border',
+        variant === 'highlight'
+          ? 'surface-highlight dark:surface-graphite'
+          : 'surface-card',
         className,
       )}
       {...props}
@@ -15,34 +22,41 @@ export function Card({ className, ...props }: ComponentProps<'div'>) {
 
 export function CardHeader({ className, ...props }: ComponentProps<'div'>) {
   return (
-    <div className={cn('flex flex-col gap-1.5 p-6', className)} {...props} />
+    <div
+      className={cn(
+        'flex items-start justify-between gap-3 px-6 pt-5 pb-3',
+        className,
+      )}
+      {...props}
+    />
   )
 }
 
 export function CardTitle({ className, ...props }: ComponentProps<'h3'>) {
   return (
     <h3
-      className={cn('text-lg leading-none font-semibold', className)}
+      className={cn('text-[15px] font-semibold tracking-tight', className)}
       {...props}
     />
   )
 }
 
 export function CardDescription({ className, ...props }: ComponentProps<'p'>) {
-  return (
-    <p
-      className={cn('text-sm text-[var(--color-muted-foreground)]', className)}
-      {...props}
-    />
-  )
+  return <p className={cn('text-ink-3 text-[13px]', className)} {...props} />
 }
 
 export function CardContent({ className, ...props }: ComponentProps<'div'>) {
-  return <div className={cn('p-6 pt-0', className)} {...props} />
+  return <div className={cn('px-6 pb-6', className)} {...props} />
 }
 
 export function CardFooter({ className, ...props }: ComponentProps<'div'>) {
   return (
-    <div className={cn('flex items-center p-6 pt-0', className)} {...props} />
+    <div
+      className={cn(
+        'border-line flex items-center justify-end gap-2 border-t px-6 py-3.5',
+        className,
+      )}
+      {...props}
+    />
   )
 }

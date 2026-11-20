@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 
 export const DropdownMenu = DropdownMenuPrimitive.Root
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+export const DropdownMenuGroup = DropdownMenuPrimitive.Group
 
 export function DropdownMenuContent({
   className,
@@ -19,7 +20,7 @@ export function DropdownMenuContent({
         sideOffset={sideOffset}
         align={align}
         className={cn(
-          'z-50 min-w-44 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-1 text-[var(--color-card-foreground)] shadow-lg',
+          'border-line bg-surface text-ink shadow-pop animate-in z-50 min-w-48 overflow-hidden rounded-[var(--radius-md)] border p-1',
           className,
         )}
         {...props}
@@ -30,12 +31,16 @@ export function DropdownMenuContent({
 
 export function DropdownMenuItem({
   className,
+  destructive,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.Item>) {
+}: ComponentProps<typeof DropdownMenuPrimitive.Item> & {
+  destructive?: boolean
+}) {
   return (
     <DropdownMenuPrimitive.Item
       className={cn(
-        'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors outline-none focus:bg-[var(--color-accent)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'focus:bg-surface-3 [&_svg]:text-ink-3 flex cursor-pointer items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[13px] outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4',
+        destructive && 'text-danger focus:bg-danger-soft [&_svg]:text-danger',
         className,
       )}
       {...props}
@@ -49,7 +54,7 @@ export function DropdownMenuLabel({
 }: ComponentProps<typeof DropdownMenuPrimitive.Label>) {
   return (
     <DropdownMenuPrimitive.Label
-      className={cn('px-3 py-2 text-sm font-semibold', className)}
+      className={cn('text-ink-3 px-2.5 py-1.5 text-xs font-medium', className)}
       {...props}
     />
   )
@@ -61,7 +66,7 @@ export function DropdownMenuSeparator({
 }: ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
   return (
     <DropdownMenuPrimitive.Separator
-      className={cn('my-1 h-px bg-[var(--color-border)]', className)}
+      className={cn('bg-line -mx-1 my-1 h-px', className)}
       {...props}
     />
   )

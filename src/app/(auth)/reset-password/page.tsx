@@ -16,15 +16,15 @@ async function ResetContent({
   if (!token) {
     return (
       <>
-        <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+        <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
           Link inválido
         </h1>
-        <p className="text-navy-200 mt-2 mb-8">
+        <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
           O link de recuperação é inválido ou está incompleto.
         </p>
         <Link
           href={ROUTES.forgotPassword}
-          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+          className="text-ink block text-center text-sm font-medium underline-offset-4 hover:underline"
         >
           Solicitar um novo link
         </Link>
@@ -34,10 +34,12 @@ async function ResetContent({
 
   return (
     <>
-      <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+      <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
         Redefinir senha
       </h1>
-      <p className="text-navy-200 mt-2 mb-8">Escolha uma nova senha.</p>
+      <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
+        Escolha uma nova senha.
+      </p>
 
       <ResetPasswordForm token={token} />
     </>

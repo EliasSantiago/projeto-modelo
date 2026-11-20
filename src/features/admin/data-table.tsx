@@ -9,11 +9,9 @@ type SortKey = keyof TableRow
 const PAGE_SIZE = 5
 
 const statusStyles: Record<TableRow['status'], string> = {
-  Aprovado:
-    'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
-  Pendente:
-    'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
-  Erro: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+  Aprovado: 'bg-success-soft text-success',
+  Pendente: 'bg-warning-soft text-warning',
+  Erro: 'bg-danger-soft text-danger',
 }
 
 export function DataTable({ rows }: { rows: TableRow[] }) {
@@ -56,10 +54,7 @@ export function DataTable({ rows }: { rows: TableRow[] }) {
           <thead>
             <tr className="border-b border-[var(--color-border)]">
               {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className="text-navy-400 pr-4 pb-3 font-medium"
-                >
+                <th key={col.key} className="text-ink-3 pr-4 pb-3 font-medium">
                   <button
                     onClick={() => toggleSort(col.key)}
                     className="flex items-center gap-1 tracking-wide uppercase"
@@ -77,9 +72,7 @@ export function DataTable({ rows }: { rows: TableRow[] }) {
                 key={row.name}
                 className="border-b border-[var(--color-border)] last:border-0"
               >
-                <td className="text-navy-700 py-4 pr-4 font-bold dark:text-white">
-                  {row.name}
-                </td>
+                <td className="text-ink py-4 pr-4 font-semibold">{row.name}</td>
                 <td className="py-4 pr-4">
                   <span
                     className={cn(
@@ -90,20 +83,16 @@ export function DataTable({ rows }: { rows: TableRow[] }) {
                     {row.status}
                   </span>
                 </td>
-                <td className="text-navy-500 dark:text-navy-100 py-4 pr-4">
-                  {row.date}
-                </td>
+                <td className="text-ink-2 py-4 pr-4">{row.date}</td>
                 <td className="py-4 pr-4">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-24 overflow-hidden rounded-full bg-[var(--color-muted)]">
                       <div
-                        className="bg-brand-500 h-full rounded-full"
+                        className="bg-accent h-full rounded-full"
                         style={{ width: `${row.progress}%` }}
                       />
                     </div>
-                    <span className="text-navy-400 text-xs">
-                      {row.progress}%
-                    </span>
+                    <span className="text-ink-3 text-xs">{row.progress}%</span>
                   </div>
                 </td>
               </tr>
@@ -113,7 +102,7 @@ export function DataTable({ rows }: { rows: TableRow[] }) {
       </div>
 
       <div className="mt-4 flex items-center justify-between">
-        <span className="text-navy-400 text-sm">
+        <span className="text-ink-3 text-sm">
           Página {page + 1} de {pageCount}
         </span>
         <div className="flex gap-2">

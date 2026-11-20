@@ -20,10 +20,12 @@ export default function RegisterPage() {
         <RedirectIfAuthed />
       </Suspense>
 
-      <h1 className="text-navy-700 text-4xl font-bold dark:text-white">
+      <h1 className="text-ink text-center text-[26px] leading-tight font-semibold tracking-[-0.025em] text-balance">
         Criar conta
       </h1>
-      <p className="text-navy-200 mt-2 mb-8">Preencha os dados para começar.</p>
+      <p className="text-ink-3 mt-2 mb-7 text-center text-sm leading-relaxed text-balance">
+        Preencha os dados para começar.
+      </p>
 
       <OAuthButtons />
       <RegisterForm />

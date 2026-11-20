@@ -20,9 +20,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <Suspense
-      fallback={<div className="bg-light-primary dark:bg-navy-900 min-h-dvh" />}
-    >
+    <Suspense fallback={<div className="bg-bg min-h-dvh" />}>
       <Shell>{children}</Shell>
     </Suspense>
   )

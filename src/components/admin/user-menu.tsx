@@ -42,12 +42,12 @@ export function UserMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent side={side} align={align} className="min-w-56">
-        <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="text-navy-700 truncate font-semibold dark:text-white">
+      <DropdownMenuContent side={side} align={align} className="w-60">
+        <DropdownMenuLabel className="text-ink">
+          <span className="block truncate text-[13px] font-medium">
             {displayName}
           </span>
-          <span className="text-navy-400 truncate text-xs font-normal">
+          <span className="text-ink-3 block truncate text-xs font-normal">
             {email}
           </span>
         </DropdownMenuLabel>
@@ -67,8 +67,8 @@ export function UserMenu({
         <DropdownMenuSeparator />
         {user ? (
           <form action={signOutAction}>
-            <DropdownMenuItem asChild>
-              <button type="submit" className="w-full text-red-500">
+            <DropdownMenuItem asChild destructive>
+              <button type="submit" className="w-full">
                 <ArrowRightStartOnRectangleIcon
                   className="size-4"
                   aria-hidden

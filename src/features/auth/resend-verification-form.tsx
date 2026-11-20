@@ -25,7 +25,7 @@ export function ResendVerificationForm({
     <form action={formAction} noValidate>
       {state?.message && (
         <p
-          className="mb-4 rounded-xl bg-green-50 p-3 text-sm text-green-700 dark:bg-green-500/10 dark:text-green-400"
+          className="bg-success-soft text-success mb-4 rounded-[var(--radius-sm)] p-3 text-sm"
           role="status"
         >
           {state.message}
@@ -34,7 +34,7 @@ export function ResendVerificationForm({
 
       {state?.error && (
         <p
-          className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400"
+          className="bg-danger-soft text-danger mb-4 rounded-[var(--radius-sm)] p-3 text-sm"
           role="alert"
         >
           {state.error}
@@ -55,10 +55,10 @@ export function ResendVerificationForm({
         Enviar novo link
       </SubmitButton>
 
-      <p className="text-navy-200 mt-6 text-center text-sm">
+      <p className="text-ink-3 mt-6 text-center text-sm">
         <Link
           href={ROUTES.login}
-          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+          className="text-ink font-medium underline-offset-4 hover:underline"
         >
           Voltar ao login
         </Link>

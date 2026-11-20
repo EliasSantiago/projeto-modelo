@@ -6,12 +6,12 @@ export function OAuthButtons() {
   if (!enabledProviders.google && !enabledProviders.github) return null
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="mb-2 flex flex-col gap-2.5">
       {enabledProviders.google && (
         <form action={signInWithProvider.bind(null, 'google')}>
           <button
             type="submit"
-            className="bg-light-primary text-navy-700 dark:bg-navy-800 dark:hover:bg-navy-700 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium transition hover:bg-[#e9eefb] dark:text-white"
+            className="border-line-strong bg-surface text-ink hover:border-ink-3 flex h-11 w-full items-center justify-center gap-2.5 rounded-full border text-sm font-medium transition-[border-color,box-shadow] hover:shadow-[0_4px_12px_-6px_rgb(23_24_28/0.18)]"
           >
             <GoogleIcon />
             Continuar com Google
@@ -23,7 +23,7 @@ export function OAuthButtons() {
         <form action={signInWithProvider.bind(null, 'github')}>
           <button
             type="submit"
-            className="bg-light-primary text-navy-700 dark:bg-navy-800 dark:hover:bg-navy-700 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium transition hover:bg-[#e9eefb] dark:text-white"
+            className="border-line-strong bg-surface text-ink hover:border-ink-3 flex h-11 w-full items-center justify-center gap-2.5 rounded-full border text-sm font-medium transition-[border-color,box-shadow] hover:shadow-[0_4px_12px_-6px_rgb(23_24_28/0.18)]"
           >
             <GitHubIcon />
             Continuar com GitHub
@@ -31,10 +31,10 @@ export function OAuthButtons() {
         </form>
       )}
 
-      <div className="my-2 flex items-center gap-3">
-        <div className="h-px w-full bg-[var(--color-border)]" />
-        <span className="text-navy-200 text-sm">ou</span>
-        <div className="h-px w-full bg-[var(--color-border)]" />
+      <div className="my-3 flex items-center gap-3">
+        <div className="bg-line h-px w-full" />
+        <span className="text-ink-3 text-xs">ou</span>
+        <div className="bg-line h-px w-full" />
       </div>
     </div>
   )

@@ -39,16 +39,14 @@ function DemoTasks() {
             <CheckCircleIcon
               className={cn(
                 'size-5',
-                task.completed
-                  ? 'text-brand-500 dark:text-white'
-                  : 'text-navy-300',
+                task.completed ? 'text-accent' : 'text-ink-3',
               )}
               aria-hidden
             />
             <span
               className={cn(
                 'flex-1 text-sm',
-                task.completed && 'text-navy-400 line-through',
+                task.completed && 'text-ink-3 line-through',
               )}
             >
               {task.title}
@@ -56,11 +54,11 @@ function DemoTasks() {
           </li>
         ))}
       </ul>
-      <p className="text-navy-400 text-sm">
+      <p className="text-ink-3 text-sm">
         Exemplo de demonstração.{' '}
         <Link
           href={ROUTES.login}
-          className="text-brand-500 hover:text-brand-700 dark:text-navy-100 font-medium dark:hover:text-white"
+          className="text-accent hover:text-ink font-medium"
         >
           Entre
         </Link>{' '}
